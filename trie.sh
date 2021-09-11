@@ -1,28 +1,36 @@
-path="/home/matheo/Images/Font d'écran/a trier";
-#Lancer avec bash
+path="/home/matheo/Images/Font d'écran";
+inPath="$path/a trier"
+
+pcPath="$path/tmp pc"
+mixPath="$path/tmp mixt"
+mobPath="$path/tmp mob"
+autPath="$path/tmp autre"
+
+#Initialise les donner
 initialise=0;
 
 iListe=$initialise;
 iListeH=$initialise;
 iListeW=$initialise;
 
-
+#Interval de donner
 pc=1.9
 mixte=1.5
 mobile=0.9
 
-declare -a Liste
+#parité
+br=0
 
-declare -a reso
+declare -a Liste #Declare le tableau i
 
+#reinitialise i
 function reset {
 	i=$initialise;
-	#echo $i
 }
 
 reset
 
-echo "Recherche de ficchier...";
+echo "Recherche de fichier...";
 
 while read x
 do 
@@ -31,9 +39,8 @@ do
 
 	let "i = $i + 1"
 
-
 done << EOF
-$(ls "$path/")
+$(ls "$inPath/")
 EOF
 
 iListe=$i;
@@ -42,7 +49,7 @@ echo "$i Fichier trouver"
 
 reset
 
-#echo "${Liste[@]};"
+#echo "${Liste[@]} \n";
 
 
 
@@ -51,7 +58,7 @@ echo "Analise des format";
 for (( n=0; n<$iListe; n++ ))
 	do
 
-	res=$(identify -format "%w/%h" "$path/${Liste[$n]}");
+	res=$(identify -format "%w/%h" "$inPath/${Liste[$n]}");
 
 	listeH+=($res)
 
@@ -59,35 +66,21 @@ for (( n=0; n<$iListe; n++ ))
    	 
 	done
 
-#while read x
-#do 
-#
-#	listeH+=("$x");
-#
-#	let "i = $i + 1"
-#
-#
-#done << EOF
-#$(identify -format "%w/%h \n" "$path/*")
-#EOF
-
 iListeH=$i;
 
 reset
 
-
 echo "Verifcation des entrée"
 
-echo "$iListe $iListeH"
+#echo "$iListe $iListeH"
 
 if [[ $iListeH == $iListe ]]; then
 	echo "Terminer"
 	echo "Copie en cours"
+	br=1
 
 	for (( n=0; n<$iListe; n++ ))
 	do
-
-		#echo ${listeH[$n]};
 
 		calc=$(python3 -c "print(${listeH[$n]})")
 
@@ -95,33 +88,43 @@ if [[ $iListeH == $iListe ]]; then
 
 		k=0
 		if [[ $calc>$pc ]]; then
-			#echo "${Liste[$n]} = $calc = $n = ${listeH[$n]}";
-			cp "$path/${Liste[$n]}" "/home/matheo/Bureau/autre/"
+			mv "$inPath/${Liste[$n]}" "$autPath"
 			k=$k+1
 		fi
 
+		#pc
+
 		if [[ [$calc>$mixte] && [$calc<$pc] && [$calc==$pc] ]]; then
-			cp "$path/${Liste[$n]}" "/home/matheo/Bureau/pc/"
+			mv "$inPath/${Liste[$n]}" "$pcPath"
 			k=$k+2
 		fi
 
+		#mixte
+
 		if [[ [$calc>$mobile] && [$calc<$mixte] && [$calc==$mixte] ]]; then
-			cp "$path/${Liste[$n]}" "/home/matheo/Bureau/mixte/"
+			mv "$inPath/${Liste[$n]}" "$mixPath"
 			k=$k+3
 		fi
 
+		#mobile
+
 		if [[ [$calc<$mobile] && [$calc==$mobile] ]]; then
-			cp "$path/${Liste[$n]}" "/home/matheo/Bureau/mob/"
+			mv "$inPath/${Liste[$n]}" "$mobPath"
 			k=$k+4
 		fi
 
-		echo "${Liste[$n]} = $k = ${listeH[$n]} = $calc)"
-
-		#echo "$n = ${reso[$n]}"
+		#echo "${Liste[$n]} = $k = ${listeH[$n]} = $calc)"
    	 
 	done
 
-	break;
+	echo "copie terminer"
+	
 fi
 
-echo "Une erreur est survenu sela peut êtres du à l'utilisation gif veulier les enlever"
+e=0
+
+if [[ $e == $br ]]; then
+
+	echo "Une erreur est survenu sela peut êtres du à l'utilisation gif veulier les enlever"
+
+fi
