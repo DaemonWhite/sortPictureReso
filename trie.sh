@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Chemin par default pour chercher les images
 inPath="$HOME/Images/Font d'écran/a trier"
 # Chemin par default ou seron ranger les immage
@@ -27,7 +29,7 @@ fi
 
 
 
-installVerif=false;# Si vraie il ne créra pas les dossier si il n'existe pas
+installVerif=false; # Si vraie il ne créra pas les dossier si il n'existe pas
 
 help()
 {
