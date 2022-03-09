@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# Chemin par default pour chercher les images
+# Default path to search for images
 inPath="$HOME/Bureau/trie"
-# Chemin par default ou seron ranger les immage
+# Default path for where the images will be stored
 pcPath="$HOME/Bureau/pc"
 mixPath="$HOME/Bureau/mixt"
 mobPath="$HOME/Bureau/mobile"
 autPath="$HOME/Bureau/tmp"
 
-#Interval de donner
+#Interval data
 pc=1.9
 mixte=1.5
 mobile=0.9
@@ -20,19 +20,19 @@ iListeRatio=$initialise
 
 #variable programe
 er=1	#Erreur
-declare -a Liste #Declare le tableau i
+declare -a Liste #Declare the tab i
 declare -a ListeRatio
 
 
-#Creation du fichier de configuration si non existant
+#Creation of the configuration file if not existing
 if [[ -f "$HOME/.confPictSorter" ]]; 
 then
-	echo "existe"
+	echo "exist"
 
 	source "$HOME/.confPictSorter"
 else
 
-	echo "Creation du fichier par default"
+	echo "Creation of the default file"
 	touch $HOME/.confPictSorter
 
 	echo "inPath=\"$inPath\"" >> $HOME/.confPictSorter
@@ -53,18 +53,18 @@ fi
 help()
 {
   echo "
-  -i  --install   configure des nouveau chemin fixe
-  -u  --uninstall suprime les chemin fixe installer
-  -s  --secure    copie les fichier au lieux de les deplacer
-  -p  --path      defini le chemin d'accer
-  -o  --output    definie le chemin de sortie
-  -f  --format    Definie les valeur des format
+  -i  --install   configure new fixed path
+  -u  --uninstall remove fixed paths install
+  -s  --secure    copy files instead of moving them
+  -p  --path      define the path
+  -o  --output    set the output path
+  -f  --format    Define the values of the formats
     {pc} {mixte} {mobile}
-  -h  --help      information commande
+  -h  --help      order information
   "
 }
 
-#Argument au lancment programe
+#Argument at program launch
 #ex ./mon_rograme -path /mon_beau_chemin/
 
 while [[ $# -gt 0 ]]; do
@@ -73,9 +73,9 @@ while [[ $# -gt 0 ]]; do
   case "${1}" in
       # Parameters that don't require value
     -i|--install)
-      echo "Pour plus tard connard"; shift ;;
+      echo "For later asshole"; shift ;;
     -p|--path)
-      echo "Ouis beauf la fleme ${2}"; shift ;;
+      echo "Yeah so lazy ${2}"; shift ;;
     -h|--help)
       help; shift ;;
     *)
@@ -97,7 +97,7 @@ function fileSearch()
 {
 
 	reset
-	echo "Recherche de fichier...";
+	echo "File search...";
 
 	while read x
 	do 
@@ -112,13 +112,13 @@ EOF
 
 iListe=$i
 
-echo "$i Image trouver"
+echo "$i Image found"
 }
 
 function analyst()
 {
 
-	echo "Analise des ratios";
+	echo "Ratio analysis";
 
 	for (( n=0; n<$iListe; n++ ))
 	do
@@ -138,15 +138,15 @@ function analyst()
 function move()
 {
 	if [[ $iListeRatio == $iListe ]]; then
-		echo "Terminer"
-		echo "Copie en cours"
+		echo "Finish"
+		echo "Copy in progress"
 		er=0
 
 		for (( n=0; n<$iListe; n++ ))
 		do
 			calc=$(python3 -c "print(${listeRatio[$n]})")
 
-			#autre
+			#other
 
 			k=0
 			if [[ $calc>$pc ]]; then
@@ -168,7 +168,7 @@ function move()
 				k=$k+3
 			fi
 
-			#mobile
+			#mobile phone
 
 			if [[ [$calc<$mobile] && [$calc==$mobile] ]]; then
 				mv "$inPath/${Liste[$n]}" "$mobPath"
@@ -179,7 +179,7 @@ function move()
    	 
 		done
 
-	echo "copie terminer"
+	echo "copy finish"
 	
 fi
 }
@@ -190,7 +190,7 @@ move
 
 if [[ 1 == $er ]]; then
 
-	echo "Une erreur est survenu cela peut êtres du à l'utilisation gif veulier les enlever"
+	echo "An error has occurred this may be due to the use of a gif please remove them"
 
 fi
 
