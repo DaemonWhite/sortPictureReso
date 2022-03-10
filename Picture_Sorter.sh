@@ -53,8 +53,7 @@ fi
 help()
 {
   echo "
-  -i  --install   configure new fixed path
-  -u  --uninstall remove fixed paths install
+  -c  --configure   configure new fixed path
   -s  --secure    copy files instead of moving them
   -p  --path      define the path
   -o  --output    set the output path
@@ -67,26 +66,42 @@ help()
 #Argument at program launch
 #ex ./mon_rograme -path /mon_beau_chemin/
 
+
+function configure()
+{
+
+}
+
+function ChangePath()
+{
+	
+}
+
 while [[ $# -gt 0 ]]; do
 
 
   case "${1}" in
       # Parameters that don't require value
-    -i|--install)
+    -c |--configure)
       echo "For later asshole"; shift ;;
-    -p|--path)
+    -p |--path)
+			inPath=${2}
       echo "Yeah so lazy ${2}"; shift ;;
-    -h|--help)
+    -s | --secure)
+			echo "Ouai la c'est pour plus tard"; shift;;
+		-p | --output)
+			echo "chemin se sortie"; shift;;
+    -h |--help)
       help; shift ;;
     *)
-      has_any_error="true"; shift ;;
+     
   esac
 
   #echo "$# et ${1}"
 
 done
 
-
+exitfff
 
 #reinitialise i
 function reset {
@@ -193,6 +208,5 @@ if [[ 1 == $er ]]; then
 	echo "An error has occurred this may be due to the use of a gif please remove them"
 
 fi
-
 
 exit
