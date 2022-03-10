@@ -1,12 +1,26 @@
 #!/bin/bash
 
-# Default path to search for images
-inPath="$HOME/Bureau/trie"
-# Default path for where the images will be stored
-pcPath="$HOME/Bureau/pc"
-mixPath="$HOME/Bureau/mixt"
-mobPath="$HOME/Bureau/mobile"
-autPath="$HOME/Bureau/tmp"
+#load environement variavle
+if [[ -f  "$HOME/.config/user-dirs.dirs" ]]; then
+	source $HOME/.config/user-dirs.dirs
+
+	# Default path to search for images
+	inPath="$XDG_PICTURES_DIR/trie"
+	# Default path for where the images will be stored
+	pcPath="$XDG_PICTURES_DIR/pc"
+	mixPath="$XDG_PICTURES_DIR/mixt"
+	mobPath="$XDG_PICTURES_DIR/mobile"
+	autPath="$XDG_PICTURES_DIR/tmp"
+else 
+	# Si les variables d'environement n'existe pas
+	inPath="$HOME/pictureResort/trie"
+	
+	pcPath="$HOME/pictureResort/pc"
+	mixPath="$HOME/pictureResort/mixt"
+	mobPath="$HOME/pictureResort/mobile"
+	autPath="$HOME/pictureResort/tmp"
+
+fi
 
 #Interval data
 pc=1.9
@@ -20,8 +34,11 @@ iListeRatio=$initialise
 
 #variable programe
 er=1	#Erreur
-declare -a Liste #Declare the tab i
-declare -a ListeRatio
+declare -a Liste #Declare the liste Image
+declare -a ListeRatio #Declare Ratio Image
+secure=false #Activer  le mode securiser
+
+
 
 
 #Creation of the configuration file if not existing
@@ -69,12 +86,12 @@ help()
 
 function configure()
 {
-
+	echo "test"
 }
 
 function ChangePath()
 {
-	
+	echo "test"	
 }
 
 while [[ $# -gt 0 ]]; do
@@ -101,7 +118,7 @@ while [[ $# -gt 0 ]]; do
 
 done
 
-exitfff
+exit
 
 #reinitialise i
 function reset {
