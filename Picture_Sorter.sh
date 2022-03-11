@@ -22,6 +22,8 @@ else
 
 fi
 
+outPath=$XDG_PICTURES_DIR
+
 #Interval data
 pc=1.9
 mixte=1.5
@@ -37,6 +39,7 @@ er=1	#Erreur
 declare -a Liste #Declare the liste Image
 declare -a ListeRatio #Declare Ratio Image
 secure=false #Activer  le mode securiser
+modConfi=false
 
 
 
@@ -83,15 +86,53 @@ help()
 #Argument at program launch
 #ex ./mon_rograme -path /mon_beau_chemin/
 
+function main()
+{
+	if [[ modConfi ]]; then
+		configure
+	fi
+
+	if [[ $outPath != $XDG_PICTURES_DIR ]]; then
+		pcPath="$outPath/pc" 
+		mixPath="$outPath/mixt"
+		mobPath="$outPath/mob"
+		autPath="$outPath/tmp"
+
+		mkdir -p $pcPath $mixPath $mobPath $autPath
+		
+	fi
+
+	
+
+	fileSearch
+	analyst
+	move
+	exit
+
+}
+
+function createConfFile()
+{
+
+	if [[ -f "$HOME/.confPictSorter" ]]; then
+		rm "$HOME/.confPictSorter"
+		touch "$HOME/.confPictSorter"
+	fi
+
+	echo "inPath=\"$inPath\"" >> $HOME/.confPictSorter
+	echo "pcPath=\"$pcPath\"" >> $HOME/.confPictSorter
+	echo "mixPath=\"$mixPath\"" >> $HOME/.confPictSorter
+	echo "mobPath=\"$mobPath\"" >> $HOME/.confPictSorter
+	echo "autPath=\"$autPath\"" >> $HOME/.confPictSorter
+
+	echo "pc=$pc" >> $HOME/.confPictSorter
+	echo "mixte=$mixte" >> $HOME/.confPictSorter
+	echo "mobile=$mobile" >> $HOME/.confPictSorter	
+}
 
 function configure()
 {
 	echo "test"
-}
-
-function ChangePath()
-{
-	echo "test"	
 }
 
 while [[ $# -gt 0 ]]; do
@@ -100,25 +141,34 @@ while [[ $# -gt 0 ]]; do
   case "${1}" in
       # Parameters that don't require value
     -c |--configure)
-      echo "For later asshole"; shift ;;
+      modConfi=true;;
     -p |--path)
-			inPath=${2}
-      echo "Yeah so lazy ${2}"; shift ;;
+			if [[ -d "${2}" ]]; then
+				inPath=${2}
+			else
+				echo "Chemin non existant"
+				exit
+			fi; shift;;
     -s | --secure)
-			echo "Ouai la c'est pour plus tard"; shift;;
-		-p | --output)
-			echo "chemin se sortie"; shift;;
+			secure=true;;
+		-o | --output)
+			if [[ -d "${2}" ]]; then
+				outPath=${2}
+			else
+				echo "Chemin non existant"
+				exit
+			fi; shift;;
     -h |--help)
-      help; shift ;;
+      help;;
     *)
-     
+			help;;
   esac
+  shift
 
   #echo "$# et ${1}"
 
 done
 
-exit
 
 #reinitialise i
 function reset {
@@ -147,6 +197,8 @@ iListe=$i
 echo "$i Image found"
 }
 
+
+
 function analyst()
 {
 
@@ -155,12 +207,15 @@ function analyst()
 	for (( n=0; n<$iListe; n++ ))
 	do
 
+		echo -ne "[$n/$iListe]"\\r
 		res=$(identify -format "%w/%h" "$inPath/${Liste[$n]}");
 		listeRatio+=("$res")
 
 		let "i = 1+$n"
    	 
 	done
+
+	echo -ne "[$n/$iListe]"
 	
 	iListeRatio=$i;
 
@@ -170,55 +225,75 @@ function analyst()
 function move()
 {
 	if [[ $iListeRatio == $iListe ]]; then
+		echo
 		echo "Finish"
 		echo "Copy in progress"
 		er=0
 
+		
+
 		for (( n=0; n<$iListe; n++ ))
 		do
+			echo -ne "[$n/$iListe]"\\r
+			
 			calc=$(python3 -c "print(${listeRatio[$n]})")
 
 			#other
 
 			k=0
 			if [[ $calc>$pc ]]; then
-				mv "$inPath/${Liste[$n]}" "$autPath"
+				if [[ secure ]]; then
+					cp "$inPath/${Liste[$n]}" "$autPath"
+				else
+					mv "$inPath/${Liste[$n]}" "$autPath"
+				fi
 				k=$k+1
 			fi
 
 			#pc
 
 			if [[ [$calc>$mixte] && [$calc<$pc] && [$calc==$pc] ]]; then
-				mv "$inPath/${Liste[$n]}" "$pcPath"
+				if [[ secure ]]; then
+					cp "$inPath/${Liste[$n]}" "$pcPath"
+				else
+					mv "$inPath/${Liste[$n]}" "$pcPath"
+				fi
 				k=$k+2
 			fi
 
 			#mixte
 
 			if [[ [$calc>$mobile] && [$calc<$mixte] && [$calc==$mixte] ]]; then
-				mv "$inPath/${Liste[$n]}" "$mixPath"
+				if [[ secure ]]; then
+					cp "$inPath/${Liste[$n]}" "$mixPath"
+				else
+					mv "$inPath/${Liste[$n]}" "$mixPath"
+				fi
 				k=$k+3
 			fi
 
 			#mobile phone
 
 			if [[ [$calc<$mobile] && [$calc==$mobile] ]]; then
-				mv "$inPath/${Liste[$n]}" "$mobPath"
+				if [[ secure ]]; then
+					cp "$inPath/${Liste[$n]}" "$mobPath"
+				else
+					mv "$inPath/${Liste[$n]}" "$mobPath"
+				fi
 				k=$k+4
 			fi
 
-			echo "$n : ${Liste[$n]} = $k = ${listeRatio[$n]} = $calc)"
+			#echo "$n : ${Liste[$n]} = $k = ${listeRatio[$n]} = $calc)"
    	 
 		done
-
-	echo "copy finish"
+		echo -ne "[$n/$iListe]"
+		echo
+		echo "copy finish"
 	
 fi
 }
 
-fileSearch
-analyst
-move
+main
 
 if [[ 1 == $er ]]; then
 
