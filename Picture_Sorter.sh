@@ -40,6 +40,9 @@ declare -a Liste #Declare the liste Image
 declare -a ListeRatio #Declare Ratio Image
 secure=false #Activer  le mode securiser
 modConfi=false
+installVerif=true
+tmp=$inPath
+
 
 
 
@@ -116,8 +119,11 @@ function createConfFile()
 
 	if [[ -f "$HOME/.confPictSorter" ]]; then
 		rm "$HOME/.confPictSorter"
-		touch "$HOME/.confPictSorter"
 	fi
+
+	touch "$HOME/.confPictSorter"
+
+	mkdir -p $inPath $pcPath $mixPath $mobPath $autPath
 
 	echo "inPath=\"$inPath\"" >> $HOME/.confPictSorter
 	echo "pcPath=\"$pcPath\"" >> $HOME/.confPictSorter
@@ -130,9 +136,220 @@ function createConfFile()
 	echo "mobile=$mobile" >> $HOME/.confPictSorter	
 }
 
+function testPath()
+{
+	#suprime la fin du chemin
+	if [[ $tmp ]]; then
+		testTmp=$(dirname $(echo $tmp))
+	fi
+	if [[ $installVerif ]]; then
+		ok=1
+	else
+		if [[ -d "$testTmp" ]]; then
+			ok=1
+		else
+			echo "chemin non existant"
+			ok=0
+		fi
+	fi
+
+	echo $ok;
+
+	return $ok;
+}
+
 function configure()
 {
-	echo "test"
+	while [[ 1 ]]; do
+
+  echo "Voulez vous créer les chemins si ils n'existent? [y/n]"
+
+  read repsInsVerif
+
+    case $repsInsVerif in
+         # Parameters that don't require value
+       n | n )
+         installVerif=false; break ;;
+       y | Y | o | O)
+         installVerif=true; break ;;
+       *)
+         echo "Valeur incorecte"; shift ;;
+    esac
+
+  done
+
+
+  echo "Voulez vous metre les sortie sous le même chemin [y/n]"
+
+  read repsIdentPath
+  while [[ 1 ]]; do
+    case $repsIdentPath in
+         # Parameters that don't require value
+       n | n )
+         identPath=false; break ;;
+       y | Y | o | O)
+         identPath=true; break ;;
+       *)
+         echo "Valeur incorecte"; shift ;;
+    esac
+
+  done
+
+
+  echo "Laisser vide pour laissez comme telle"
+  echo "Donner le chemin ou son vos immage à trouver"
+  echo "Chemin Actuelle : $inPath"
+  read tmp
+
+  if [[ $tmp ]]; then
+  	inPath=$tmp
+  	echo "ok $tmp"
+  fi
+
+  echo $identPath
+
+  if [[ $identPath == true ]]; then
+		echo "Donner le chemin de sortie de vos image"
+		while [[ 1 ]]; do
+			read tmp
+			#suprime la fin du chemin
+			if [[ $tmp ]]; then
+				testTmp=$(dirname $(echo $tmp))
+			fi
+			
+			if [[ $installVerif == true ]]; then
+				ok=1
+			else
+				if [[ -d $testTmp ]]; then
+					ok=1
+				else
+					echo "chemin non existant $tmp"
+					ok=0
+				fi
+			fi
+			if [[ $ok == 1 ]]; then
+				pcPath="$tmp/pc"
+				mixPath="$tmp/mixt"
+				mobPath="$tmp/mob"
+				autPath="$tmp/tmp"
+				break
+			fi
+		done
+	else
+		while [[ 1 ]]; do
+			echo "Donner le chemin ou vous voulez envoyer vos Image foramt pc"
+			echo "Chemin Actuelle : $pcPath"
+  		read tmp
+  		verifTestPath=$(testPath)  		
+  		echo $kkk
+  		if [[ $tmp ]]; then
+  			if [[ $verifTestPath == 1 ]]; then
+  				pcPath=$tmp
+  				break
+  			fi
+  		else
+  			echo "Le chemin na pas étais changer"
+  			break
+  		fi
+
+		done
+		
+		while [[ 1 ]]; do
+			echo "Donner le chemin ou vous voulez envoyer vos Image foramt mixte"
+  		echo "Chemin Actuelle : $mixPath"
+  		read tmp
+			verifTestPath=$(testPath)  		
+  		echo $kkk
+  		if [[ $tmp ]]; then
+  			if [[ $verifTestPath == 1 ]]; then
+  				mixPath=$tmp
+  				break
+  			fi
+  		else
+  			echo "Le chemin na pas étais changer"
+  			break
+  		fi
+		done
+
+		while [[ 1 ]]; do
+			echo "Donner le chemin ou vous voulez envoyer vos Image foramt mobile"
+  		echo "Chemin Actuelle : $mobPath"
+  		read tmp
+			verifTestPath=$(testPath)  		
+  		echo $kkk
+  		if [[ $tmp ]]; then
+  			if [[ $verifTestPath == 1 ]]; then
+  				mobPath=$tmp
+  				break
+  			fi
+  		else
+  			echo "Le chemin na pas étais changer"
+  			break
+  		fi
+		done
+
+		while [[ 1 ]]; do
+			echo "Donner le chemin ou vous voulez envoyer le reste des images"
+  		echo "Chemin Actuelle : $autPath"
+  		read tmp
+			verifTestPath=$(testPath)  		
+  		echo $kkk
+  		if [[ $tmp ]]; then
+  			if [[ $verifTestPath == 1 ]]; then
+  				autPath=$tmp
+  				break
+  			fi
+  		else
+  			echo "Le chemin na pas étais changer"
+  			break
+  		fi
+		done
+  	
+
+  	echo "";
+	fi
+
+  while [[ 1 ]]; do
+
+     echo "Voulez vous changer les valeur par defaut pour le trie des image [y/n] -i pour plus d'info
+pc=1.9
+mixte=1.5
+mobile=0.9
+"  
+    read repsInsValue
+
+    case $repsInsValue in
+         # Parameters that don't require value
+       -i | -I | --info )
+         echo "
+Les valeurs son caculer a partir de leur fraction exemple 16/9 fait 1.78 plus la valeur sera petite plus le format serat en portrait(etroit) et inversemnt plus il sera grand plus le foramt sera proche d'un paysage(Large)
+
+Les donner sont rangée dans cette ordre 'Aurtre > PC > Mixte > mobile' tout ce qui sera supérieur à 1.9 sera donc mit dans 'autre' si on prend les valeur par défaut les immage pc devron êtres inferieur à 1.9 et supéreiurs à 1.5
+"; shift ;;
+       n | n )
+         repsInsValue=true; break ;;
+       y | Y | o | O)
+         repsInsValue=true; break ;;
+       *)
+         echo "Valeur incorecte"; shift ;;
+    esac
+
+
+
+  done;
+
+  if [[ repsInsValue==true ]]; then
+  	echo "pc : "
+  	read pc
+  	echo "mobile : "
+  	read mobile
+  	echo "mixte : "
+  	read mixte
+  fi
+
+  createConfFile
+  echo "fichier configurer"
+
 }
 
 while [[ $# -gt 0 ]]; do
