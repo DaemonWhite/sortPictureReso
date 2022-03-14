@@ -42,6 +42,7 @@ secure=false #Activer  le mode securiser
 modConfi=false
 installVerif=true
 tmp=$inPath
+start=true
 
 
 
@@ -80,8 +81,7 @@ help()
   -s  --secure    copy files instead of moving them
   -p  --path      define the path
   -o  --output    set the output path
-  -f  --format    Define the values of the formats
-    {pc} {mixte} {mobile}
+  -n	--none			Desactive la recherche de fichier 
   -h  --help      order information
   "
 }
@@ -91,7 +91,7 @@ help()
 
 function main()
 {
-	if [[ modConfi ]]; then
+	if [[ $modConfi != false ]]; then
 		configure
 	fi
 
@@ -106,10 +106,12 @@ function main()
 	fi
 
 	
+	if [[ $start != false ]]; then
+		fileSearch
+		analyst
+		move
+	fi
 
-	fileSearch
-	analyst
-	move
 	exit
 
 }
@@ -375,10 +377,13 @@ while [[ $# -gt 0 ]]; do
 				echo "Chemin non existant"
 				exit
 			fi; shift;;
+			-n | --none)
+				start=false;;
     -h |--help)
       help;;
     *)
-			help;;
+			echo "Erreur de syntaxe -h ou --help pour la liste des coammandes"
+			break;;
   esac
   shift
 
