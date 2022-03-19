@@ -51,8 +51,6 @@ start=true
 #Creation of the configuration file if not existing
 if [[ -f "$HOME/.confPictSorter" ]]; 
 then
-	echo "Exist"
-
 	source "$HOME/.confPictSorter"
 else
 
@@ -74,6 +72,18 @@ else
 
 fi
 
+version()
+{
+		echo "Version : 0.0.2"
+		echo "Script By DaemonWhite"
+		echo
+		echo "English Translate by DarkMitz"
+		echo
+		echo "script use XDG systeme & identify"
+
+
+}
+
 help()
 {
   echo "
@@ -81,8 +91,11 @@ help()
   -s  --secure      Copy files instead of moving them
   -p  --path        Define the path
   -o  --output      Set the output path
-  -n	--none	    Disable file search 
+  -n	--none	    	Disable file search
+  -v  --version 		Version app
   -h  --help        Order information
+
+  by DaemonWhite translate DarkMitz
   "
 }
 
@@ -258,7 +271,7 @@ function configure()
 		
 		while [[ 1 ]]; do
 			echo "Give the path where you want to send your Image in mixed format"
-  		echo "Current Path: $mixPath"
+  		echo "Current Path: $mixPath"Version
   		read tmp
 			verifTestPath=$(testPath)  		
   		echo $kkk
@@ -379,6 +392,8 @@ while [[ $# -gt 0 ]]; do
 			fi; shift;;
 			-n | --none)
 				start=false;;
+		-v | --version)
+			version;;
     -h |--help)
       help;;
     *)
