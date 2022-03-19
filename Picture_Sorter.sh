@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#load environement variavle
+#Load environement variavle
 if [[ -f  "$HOME/.config/user-dirs.dirs" ]]; then
 	source $HOME/.config/user-dirs.dirs
 
@@ -12,7 +12,7 @@ if [[ -f  "$HOME/.config/user-dirs.dirs" ]]; then
 	mobPath="$XDG_PICTURES_DIR/mobile"
 	autPath="$XDG_PICTURES_DIR/tmp"
 else 
-	# Si les variables d'environement n'existe pas
+	# If the environment variables do not exist
 	inPath="$HOME/pictureResort/trie"
 	
 	pcPath="$HOME/pictureResort/pc"
@@ -34,11 +34,11 @@ initialise=0
 iListe=$initialise
 iListeRatio=$initialise
 
-#variable programe
+#Variable programe
 er=1	#Erreur
 declare -a Liste #Declare the liste Image
 declare -a ListeRatio #Declare Ratio Image
-secure=false #Activer  le mode securiser
+secure=false #Activate safe mode
 modConfi=false
 installVerif=true
 tmp=$inPath
@@ -51,7 +51,7 @@ start=true
 #Creation of the configuration file if not existing
 if [[ -f "$HOME/.confPictSorter" ]]; 
 then
-	echo "exist"
+	echo "Exist"
 
 	source "$HOME/.confPictSorter"
 else
@@ -77,12 +77,12 @@ fi
 help()
 {
   echo "
-  -c  --configure   configure new fixed path
-  -s  --secure    copy files instead of moving them
-  -p  --path      define the path
-  -o  --output    set the output path
-  -n	--none			Desactive la recherche de fichier 
-  -h  --help      order information
+  -c  --configure   Configure new fixed path
+  -s  --secure      Copy files instead of moving them
+  -p  --path        Define the path
+  -o  --output      Set the output path
+  -n	--none	    Disable file search 
+  -h  --help        Order information
   "
 }
 
@@ -140,7 +140,7 @@ function createConfFile()
 
 function testPath()
 {
-	#suprime la fin du chemin
+	#Remove end of path
 	if [[ $tmp ]]; then
 		testTmp=$(dirname $(echo $tmp))
 	fi
@@ -150,7 +150,7 @@ function testPath()
 		if [[ -d "$testTmp" ]]; then
 			ok=1
 		else
-			echo "chemin non existant"
+			echo "Path not existing"
 			ok=0
 		fi
 	fi
@@ -164,7 +164,7 @@ function configure()
 {
 	while [[ 1 ]]; do
 
-  echo "Voulez vous créer les chemins si ils n'existent? [y/n]"
+  echo "Do you want to create the paths if they exist? [y/n]"
 
   read repsInsVerif
 
@@ -181,7 +181,7 @@ function configure()
   done
 
 
-  echo "Voulez vous metre les sortie sous le même chemin [y/n]"
+  echo "Do you want to put the outputs under the same path as before [y/n]"
 
   read repsIdentPath
   while [[ 1 ]]; do
@@ -192,15 +192,15 @@ function configure()
        y | Y | o | O)
          identPath=true; break ;;
        *)
-         echo "Valeur incorecte"; shift ;;
+         echo "Incorrect value"; shift ;;
     esac
 
   done
 
 
-  echo "Laisser vide pour laissez comme telle"
-  echo "Donner le chemin ou son vos immage à trouver"
-  echo "Chemin Actuelle : $inPath"
+  echo "Leave blank to leave as is"
+  echo "Give the path or your image to find"
+  echo "Current Path : $inPath"
   read tmp
 
   if [[ $tmp ]]; then
@@ -211,10 +211,10 @@ function configure()
   echo $identPath
 
   if [[ $identPath == true ]]; then
-		echo "Donner le chemin de sortie de vos image"
+		echo "Give the output path of your images"
 		while [[ 1 ]]; do
 			read tmp
-			#suprime la fin du chemin
+			#remove end of path
 			if [[ $tmp ]]; then
 				testTmp=$(dirname $(echo $tmp))
 			fi
@@ -225,7 +225,7 @@ function configure()
 				if [[ -d $testTmp ]]; then
 					ok=1
 				else
-					echo "chemin non existant $tmp"
+					echo "path not existing $tmp"
 					ok=0
 				fi
 			fi
@@ -239,8 +239,8 @@ function configure()
 		done
 	else
 		while [[ 1 ]]; do
-			echo "Donner le chemin ou vous voulez envoyer vos Image foramt pc"
-			echo "Chemin Actuelle : $pcPath"
+			echo "Give the path where you want to send your Image in pc format"
+			echo "Current Path: $pcPath"
   		read tmp
   		verifTestPath=$(testPath)  		
   		echo $kkk
@@ -250,15 +250,15 @@ function configure()
   				break
   			fi
   		else
-  			echo "Le chemin na pas étais changer"
+  			echo "The path was not changed"
   			break
   		fi
 
 		done
 		
 		while [[ 1 ]]; do
-			echo "Donner le chemin ou vous voulez envoyer vos Image foramt mixte"
-  		echo "Chemin Actuelle : $mixPath"
+			echo "Give the path where you want to send your Image in mixed format"
+  		echo "Current Path: $mixPath"
   		read tmp
 			verifTestPath=$(testPath)  		
   		echo $kkk
@@ -268,14 +268,14 @@ function configure()
   				break
   			fi
   		else
-  			echo "Le chemin na pas étais changer"
+  			echo "The path has not been changed"
   			break
   		fi
 		done
 
 		while [[ 1 ]]; do
-			echo "Donner le chemin ou vous voulez envoyer vos Image foramt mobile"
-  		echo "Chemin Actuelle : $mobPath"
+			echo "Give the path where you want to send your Image in mobile format"
+  		echo "Current Path: $mobPath"
   		read tmp
 			verifTestPath=$(testPath)  		
   		echo $kkk
@@ -285,14 +285,14 @@ function configure()
   				break
   			fi
   		else
-  			echo "Le chemin na pas étais changer"
+  			echo "The path has not been changed"
   			break
   		fi
 		done
 
 		while [[ 1 ]]; do
-			echo "Donner le chemin ou vous voulez envoyer le reste des images"
-  		echo "Chemin Actuelle : $autPath"
+			echo "Give the path where you want to send the rest of the images"
+  		echo "Current Path : $autPath"
   		read tmp
 			verifTestPath=$(testPath)  		
   		echo $kkk
@@ -302,7 +302,7 @@ function configure()
   				break
   			fi
   		else
-  			echo "Le chemin na pas étais changer"
+  			echo "The path has not been changed"
   			break
   		fi
 		done
@@ -313,7 +313,7 @@ function configure()
 
   while [[ 1 ]]; do
 
-     echo "Voulez vous changer les valeur par defaut pour le trie des image [y/n] -i pour plus d'info
+     echo "Do you want to change the default values for sorting images [y/n] -i for more info
 pc=1.9
 mixte=1.5
 mobile=0.9
@@ -324,16 +324,16 @@ mobile=0.9
          # Parameters that don't require value
        -i | -I | --info )
          echo "
-Les valeurs son caculer a partir de leur fraction exemple 16/9 fait 1.78 plus la valeur sera petite plus le format serat en portrait(etroit) et inversemnt plus il sera grand plus le foramt sera proche d'un paysage(Large)
+The values are calculated from their fraction example 16/9 is 1.78 the smaller the value the more the format will be in portrait (narrow) and conversely the larger it will be the closer the format will be to a landscape (Wide)
 
-Les donner sont rangée dans cette ordre 'Aurtre > PC > Mixte > mobile' tout ce qui sera supérieur à 1.9 sera donc mit dans 'autre' si on prend les valeur par défaut les immage pc devron êtres inferieur à 1.9 et supéreiurs à 1.5
+Give them are arranged in this order 'Other > PC > Mixed > mobile' everything that will be greater than 1.9 will therefore be put in 'other' if we take the default values ​​the pc images must be less than 1.9 and greater than 1.5
 "; shift ;;
        n | n )
          repsInsValue=true; break ;;
        y | Y | o | O)
          repsInsValue=true; break ;;
        *)
-         echo "Valeur incorecte"; shift ;;
+         echo "Incorrect value"; shift ;;
     esac
 
 
@@ -350,7 +350,7 @@ Les donner sont rangée dans cette ordre 'Aurtre > PC > Mixte > mobile' tout ce 
   fi
 
   createConfFile
-  echo "fichier configurer"
+  echo "configure file"
 
 }
 
@@ -365,7 +365,7 @@ while [[ $# -gt 0 ]]; do
 			if [[ -d "${2}" ]]; then
 				inPath=${2}
 			else
-				echo "Chemin non existant"
+				echo "Path not existing"
 				exit
 			fi; shift;;
     -s | --secure)
@@ -374,7 +374,7 @@ while [[ $# -gt 0 ]]; do
 			if [[ -d "${2}" ]]; then
 				outPath=${2}
 			else
-				echo "Chemin non existant"
+				echo "Path not existing"
 				exit
 			fi; shift;;
 			-n | --none)
@@ -382,7 +382,7 @@ while [[ $# -gt 0 ]]; do
     -h |--help)
       help;;
     *)
-			echo "Erreur de syntaxe -h ou --help pour la liste des coammandes"
+			echo "syntax error -h or --help for the list of commands"
 			break;;
   esac
   shift
