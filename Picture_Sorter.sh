@@ -479,7 +479,7 @@ function move()
 
 			k=0
 			if [[ $calc>$pc ]]; then
-				if [[ secure ]]; then
+				if [[ $secure ]]; then
 					cp "$inPath/${Liste[$n]}" "$autPath"
 				else
 					mv "$inPath/${Liste[$n]}" "$autPath"
@@ -490,7 +490,7 @@ function move()
 			#pc
 
 			if [[ [$calc>$mixte] && [$calc<$pc] && [$calc==$pc] ]]; then
-				if [[ secure ]]; then
+				if [[ $secure ]]; then
 					cp "$inPath/${Liste[$n]}" "$pcPath"
 				else
 					mv "$inPath/${Liste[$n]}" "$pcPath"
@@ -501,7 +501,7 @@ function move()
 			#mixte
 
 			if [[ [$calc>$mobile] && [$calc<$mixte] && [$calc==$mixte] ]]; then
-				if [[ secure ]]; then
+				if [[ $secure ]]; then
 					cp "$inPath/${Liste[$n]}" "$mixPath"
 				else
 					mv "$inPath/${Liste[$n]}" "$mixPath"
@@ -512,7 +512,7 @@ function move()
 			#mobile phone
 
 			if [[ [$calc<$mobile] && [$calc==$mobile] ]]; then
-				if [[ secure ]]; then
+				if [[ $secure ]]; then
 					cp "$inPath/${Liste[$n]}" "$mobPath"
 				else
 					mv "$inPath/${Liste[$n]}" "$mobPath"
