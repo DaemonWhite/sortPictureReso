@@ -79,7 +79,7 @@ version()
 		echo
 		echo "English Translate by DarkMitz"
 		echo
-		echo "script use XDG systeme & identify"
+		echo "script use XDG systeme & identify & python3"
 }
 
 help()
