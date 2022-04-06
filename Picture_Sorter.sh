@@ -38,7 +38,7 @@ iListeRatio=$initialise
 er=1	#Erreur
 declare -a Liste #Declare the liste Image
 declare -a ListeRatio #Declare Ratio Image
-secure=false #Activate safe mode
+secure=false; #Activate safe mode
 modConfi=false
 installVerif=true
 tmp=$inPath
@@ -102,6 +102,7 @@ help()
 
 function main()
 {
+
 	if [[ $modConfi != false ]]; then
 		configure
 	fi
@@ -116,6 +117,7 @@ function main()
 		
 	fi
 
+	echo "pc:$pc mixte$mixte mob:$mobile $tmp"
 	
 	if [[ $start != false ]]; then
 		fileSearch
@@ -475,47 +477,47 @@ function move()
 
 			#other
 
-			k=0
+			k=""
 			if [[ $calc>$pc ]]; then
-				if [[ $secure== true ]]; then
+				if [[ $secure == true ]]; then 
 					cp "$inPath/${Liste[$n]}" "$autPath"
 				else
 					mv "$inPath/${Liste[$n]}" "$autPath"
 				fi
-				k=$k+1
+				k+="tmp "
 			fi
 
 			#pc
 
 			if [[ [$calc>$mixte] && [$calc<$pc] && [$calc==$pc] ]]; then
-				if [[ $secure== true ]]; then
+				if [[ $secure == true ]]; then
 					cp "$inPath/${Liste[$n]}" "$pcPath"
 				else
 					mv "$inPath/${Liste[$n]}" "$pcPath"
 				fi
-				k=$k+2
+				k+="pc "
 			fi
 
 			#mixte
 
 			if [[ [$calc>$mobile] && [$calc<$mixte] && [$calc==$mixte] ]]; then
-				if [[ $secure == true]]; then
+				if [[ $secure == true ]]; then
 					cp "$inPath/${Liste[$n]}" "$mixPath"
 				else
 					mv "$inPath/${Liste[$n]}" "$mixPath"
 				fi
-				k=$k+3
+				k+="mobile "
 			fi
 
 			#mobile phone
 
-			if [[ [$calc<$mobile] && [$calc==$mobile] ]]; then
-				if [[ $secure == true]]; then
+			if [[ [$calc<$mobile]&&[$calc==$mobile] ]]; then
+				if [[ $secure == true ]]; then
 					cp "$inPath/${Liste[$n]}" "$mobPath"
 				else
 					mv "$inPath/${Liste[$n]}" "$mobPath"
 				fi
-				k=$k+4
+				k+="phone"
 			fi
 
 			#echo "$n : ${Liste[$n]} = $k = ${listeRatio[$n]} = $calc)"
