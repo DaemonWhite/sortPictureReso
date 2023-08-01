@@ -5,7 +5,7 @@ import shutil
 
 from PIL import Image
 
-from sizeimagestorage import Size_image_storage
+from .sizeimagestorage import Size_image_storage
 
 class Picture_sorter(Size_image_storage):
 
@@ -42,10 +42,14 @@ class Picture_sorter(Size_image_storage):
     def set_picture_in_path(self, path: str):
         if path == "":
             self.default_in_picture()
+        else:
+            self.__picture_in = str(path)
 
     def set_picture_out_path(self, path: str):
         if path == "":
             self.default_out_picture()
+        else:
+            self.__picture_out = path
 
     def default_in_picture(self):
         path_picture = self.xdg_picture_path()
