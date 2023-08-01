@@ -35,11 +35,17 @@ class ConfigPictureSorter(object):
     def modify_path_out(self, path):
         self.__json_data["path_in"] = path
 
-    def add_coefficient(self, name: str, width: int, height : int):
+    def add_coefficient(self, name: str,
+    min_width: int,
+    min_height : int,
+    max_width: int,
+    max_height : int,
+    ):
         self.__json_data["coefficient"][name] = {
             "width" : width,
             "height" :  height,
-            "coef" : float(width / height),
+            "min_coef" : float(min_width / min_height),
+            "max_coef" : float(max_width / max_height),
         }
 
     def enabled_copy_mode(self, copy = True):
