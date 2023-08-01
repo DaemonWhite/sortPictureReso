@@ -1,14 +1,8 @@
 #!/bin/python3
 import os
 import platform
-from SizeImageStorage import Size_image_storage
 
-import xdg.BaseDirectory
-
-#dirs = xdg.BaseDirectory.list_dirs("xdg-user-dirs")
-
-
-class Picture_sorter(Size_image_storage):
+class Picture_sorter():
 
     DEFAULT_PICTURE_OUT = "./"
     __IMAGE_EXTENTION = [".jpg", ".jpeg", ".png", ".gif"]
