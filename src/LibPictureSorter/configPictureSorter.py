@@ -9,6 +9,8 @@ import xdg.BaseDirectory
 class ConfigPictureSorter(object):
     def __init__(self, name = "PictureSorter"):
         self.__json_data = {
+            "default" : True,
+            "copy" : False,
             "path_in" : "./",
             "path_out" : "./out",
             "coefficient" : {},
@@ -39,6 +41,12 @@ class ConfigPictureSorter(object):
             "height" :  height,
             "coef" : float(width / height),
         }
+
+    def enabled_copy_mode(self, copy = True):
+        self.__json_data["copy"] = copy
+
+    def disable_default(self, default = False):
+        self.__json_data["default"] = default
 
     def remove_coefficient(self, name):
         del self.__json_data["coefficient"][name]
