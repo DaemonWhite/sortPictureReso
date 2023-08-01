@@ -35,6 +35,13 @@ class ConfigPictureSorter(object):
     def modify_path_out(self, path):
         self.__json_data["path_in"] = path
 
+    def __calc_ceof(self, w, h) -> float:
+        calc = 0
+        if h != 0:
+            calc = w/h
+
+        return calc
+
     def add_coefficient(self, name: str,
     min_width: int,
     min_height : int,
@@ -42,10 +49,12 @@ class ConfigPictureSorter(object):
     max_height : int,
     ):
         self.__json_data["coefficient"][name] = {
-            "width" : width,
-            "height" :  height,
-            "min_coef" : float(min_width / min_height),
-            "max_coef" : float(max_width / max_height),
+            "min_width" : min_width,
+            "min_height" :  min_height,
+            "max_width" : max_width,
+            "max_height" :  max_height,
+            "min_coef" : self.__calc_ceof(min_width, min_height),
+            "max_coef" : self.__calc_ceof(max_width, max_height),
         }
 
     def enabled_copy_mode(self, copy = True):
@@ -94,7 +103,7 @@ if __name__ == "__main__":
     cps = ConfigPictureSorter()
     cps.load()
     print(cps.get_coefficent("pc-main"))
-    cps.add_coefficient("pc-main", 1920, 1080)
-    cps.add_coefficient("phone-main", 1080, 1920)
+    cps.add_coefficient("pc-main", 1080, 1920, 1920, 1080)
+    cps.add_coefficient("phone-main", 1080, 1920 , 1080, 2050)
     cps.save()
     print(cps.get_all_coefficient())
