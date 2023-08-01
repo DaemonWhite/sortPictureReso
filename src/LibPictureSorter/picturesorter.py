@@ -2,6 +2,8 @@
 import os
 import platform
 
+from PIL import Image
+
 class Picture_sorter():
 
     DEFAULT_PICTURE_OUT = "./"
@@ -103,6 +105,3 @@ if __name__ == "__main__":
     print("Path out : ", ps.get_picture_out_path())
     ps.search_images()
     print(ps.get_search_images())
-
-import os
-
