@@ -51,6 +51,12 @@ class ConfigPictureSorter(object):
     def remove_coefficient(self, name):
         del self.__json_data["coefficient"][name]
 
+    def get_copy(self):
+        return self.__json_data["copy"]
+
+    def get_default(self):
+        return self.__json_data["default"]
+
     def get_coefficent(self, name):
         W = self.__json_data["coefficient"][name]["width"]
         H = self.__json_data["coefficient"][name]["height"]
