@@ -1,6 +1,7 @@
 #!/bin/python3
 import os
 import platform
+import shutil
 
 from PIL import Image
 
@@ -21,7 +22,7 @@ class Picture_sorter(Size_image_storage):
 
         self.__files_images = list()
 
-        self.__is_copy = True
+        self.enabled_copie_mode()
 
         self.set_picture_in_path(picture_in)
         self.set_picture_out_path(picutre_out)
@@ -55,6 +56,12 @@ class Picture_sorter(Size_image_storage):
         path_picture = self.xdg_picture_path() + "/out" # Si aucun système n'est detecter
 
         self.__picture_out = path_picture
+
+    def enabled_copie_mode(self, enabled_copie=True):
+        if enabled_copie:
+            self.__move_image = shutil.copy
+        else:
+            self.__move_image = shutil.move
 
     def xdg_picture_path(self) -> str:
         path_picture = self.DEFAULT_PICTURE_OUT
@@ -98,6 +105,9 @@ class Picture_sorter(Size_image_storage):
         for name_coef in self.get_name_coef():
             self.__sort_images[name_coef] = []
 
+    def __move_image(self):
+        pass
+
     def resolve(self):
         for image in self.__files_images:
             path_image = self.__picture_in + "/" + image
@@ -113,8 +123,21 @@ class Picture_sorter(Size_image_storage):
             if coef > -1:
                 self.__sort_images[self.sort_coef(coef)].append(image)
 
+    def verif_output(self, verif_path):
+        exist_folder = os.path.isdir(verif_path)
+
+        if not exist_folder:
+            os.makedirs(verif_path)
+
     def apply_resolve(self):
-        pass
+        path_out = str
+
+        for name_dict in self.__sort_images:
+            path_out = os.path.join(self.__picture_out, name_dict)
+            self.verif_output(path_out)
+            for image in self.__sort_images[name_dict]:
+                self.__move_image(src=os.path.join(self.__picture_in , image),
+                dst=os.path.join(path_out, image))
 
 if __name__ == "__main__":
     ps = Picture_sorter()
@@ -124,3 +147,4 @@ if __name__ == "__main__":
     ps.search_images()
     ps.generate__list_sort_image()
     ps.resolve()
+    ps.apply_resolve()
