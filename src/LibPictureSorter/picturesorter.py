@@ -4,13 +4,17 @@ import platform
 
 from PIL import Image
 
-class Picture_sorter():
+from sizeimagestorage import Size_image_storage
+
+class Picture_sorter(Size_image_storage):
 
     DEFAULT_PICTURE_OUT = "./"
     __IMAGE_EXTENTION = [".jpg", ".jpeg", ".png", ".gif"]
     def __init__(self,
         picture_in = "",
         picutre_out = ""):
+
+        self.__sort_images = { "Other" : [] }
 
         self.__picture_in = self.DEFAULT_PICTURE_OUT
         self.__picture_out = self.DEFAULT_PICTURE_OUT
@@ -81,9 +85,6 @@ class Picture_sorter():
                     else:
                         return path.strip('"')
 
-
-
-
     def xdg_picture_path_windows(self):
         pass
 
@@ -93,8 +94,24 @@ class Picture_sorter():
             if os.path.splitext(file)[1].lower() in self.__IMAGE_EXTENTION:
                 self.__files_images.append(file)
 
+    def generate__list_sort_image(self):
+        for name_coef in self.get_name_coef():
+            self.__sort_images[name_coef] = []
+
     def resolve(self):
-        pass
+        for image in self.__files_images:
+            path_image = self.__picture_in + "/" + image
+            coef = int(-1)
+
+            try:
+                with Image.open(path_image) as im:
+                    xsize, ysize = im.size
+                    coef = self.calculate_coef(xsize, ysize)
+            except OSError:
+                print("Erreur : Impossible de récupérer l'image : {path_image}")
+
+            if coef > -1:
+                self.__sort_images[self.sort_coef(coef)].append(image)
 
     def apply_resolve(self):
         pass
@@ -103,5 +120,7 @@ if __name__ == "__main__":
     ps = Picture_sorter()
     print("Path in : ", ps.get_picture_in_path())
     print("Path out : ", ps.get_picture_out_path())
+    ps.default_coef()
     ps.search_images()
-    print(ps.get_search_images())
+    ps.generate__list_sort_image()
+    ps.resolve()
