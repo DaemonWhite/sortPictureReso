@@ -33,9 +33,9 @@ def ls_conf(cps: ConfigPictureSorter):
         .format(coef,
         coefs[coef]["min_width"],
         coefs[coef]["min_height"],
+        coefs[coef]["min_coef"],
         coefs[coef]["max_width"],
         coefs[coef]["max_height"],
-        coefs[coef]["min_coef"],
         coefs[coef]["max_coef"])
         )
 
