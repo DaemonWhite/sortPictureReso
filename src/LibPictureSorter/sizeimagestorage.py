@@ -43,6 +43,14 @@ class Size_image_storage(object):
         coef = width / height
         return coef
 
+    def sort_coef(self, coef: float):
+        ret_coef = "Other"
+        for name_coef in self.__coefficient:
+            if self.__coefficient[name_coef][0] <= coef < self.__coefficient[name_coef][1] :
+                ret_coef = name_coef
+                break
+
+        return ret_coef
 if __name__ == "__main__":
     te = Size_image_storage()
     te.default_coef()
@@ -50,4 +58,9 @@ if __name__ == "__main__":
     te.remove_coef("pc-statdart")
     te.list_coef()
     te.get_name_coef()
+    print("COEF 1 " + te.sort_coef(1))
+    print("COEF 0.5 " + te.sort_coef(0.5))
+    print("COEF 2.1 " + te.sort_coef(2.1))
+    print("COEF 3 " + te.sort_coef(3))
+    print("COEF 0 " + te.sort_coef(0))
     print( "Pc Large : ", te.get_coef("pc-large"))
