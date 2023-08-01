@@ -11,13 +11,15 @@ import xdg.BaseDirectory
 class Picture_sorter(Size_image_storage):
 
     DEFAULT_PICTURE_OUT = "./"
-
+    __IMAGE_EXTENTION = [".jpg", ".jpeg", ".png", ".gif"]
     def __init__(self,
         picture_in = "",
         picutre_out = ""):
 
         self.__picture_in = self.DEFAULT_PICTURE_OUT
         self.__picture_out = self.DEFAULT_PICTURE_OUT
+
+        self.__files_images = list()
 
         self.set_picture_in_path(picture_in)
         self.set_picture_out_path(picutre_out)
@@ -27,6 +29,9 @@ class Picture_sorter(Size_image_storage):
 
     def get_picture_out_path(self):
         return self.__picture_out
+
+    def get_search_images(self):
+        return self.__files_images.copy()
 
     def set_picture_in_path(self, path: str):
         if path == "":
@@ -71,7 +76,7 @@ class Picture_sorter(Size_image_storage):
                     path = os.path.expanduser(line.split('=', 1)[1].strip().strip('"'))
                     path_find = path.find('$HOME/')
                     if path_find > -1:
-                        return line.split('$HOME/', 1)[1].strip().strip('"')
+                        return os.getenv('HOME') + line.split('$HOME', 1)[1].strip().strip('"')
                     else:
                         return path.strip('"')
 
@@ -81,6 +86,11 @@ class Picture_sorter(Size_image_storage):
     def xdg_picture_path_windows(self):
         pass
 
+    def search_images(self):
+        files = os.listdir(self.__picture_in)
+        for file in files:
+            if os.path.splitext(file)[1].lower() in self.__IMAGE_EXTENTION:
+                self.__files_images.append(file)
 
     def resolve(self):
         pass
@@ -91,7 +101,9 @@ class Picture_sorter(Size_image_storage):
 if __name__ == "__main__":
     ps = Picture_sorter()
     print("Path in : ", ps.get_picture_in_path())
-    print("Path in : ", ps.get_picture_out_path())
+    print("Path out : ", ps.get_picture_out_path())
+    ps.search_images()
+    print(ps.get_search_images())
 
 import os
 
