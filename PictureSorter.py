@@ -21,6 +21,8 @@ class Picture_sorter(Size_image_storage):
 
         self.__files_images = list()
 
+        self.__is_copy = True
+
         self.set_picture_in_path(picture_in)
         self.set_picture_out_path(picutre_out)
 
@@ -32,6 +34,9 @@ class Picture_sorter(Size_image_storage):
 
     def get_search_images(self):
         return self.__files_images.copy()
+
+    def reset_search_images(self):
+        self.__files_images = list()
 
     def set_picture_in_path(self, path: str):
         if path == "":
