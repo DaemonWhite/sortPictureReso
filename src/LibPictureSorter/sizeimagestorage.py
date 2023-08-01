@@ -39,7 +39,7 @@ class Size_image_storage(object):
     def list_coef(self):
         print(self.__coefficient)
 
-    def calculate_coef(width: int, height: int) -> float:
+    def calculate_coef(self, width: int, height: int) -> float:
         coef = width / height
         return coef
 
