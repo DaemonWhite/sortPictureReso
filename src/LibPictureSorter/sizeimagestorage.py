@@ -1,13 +1,14 @@
 class Size_image_storage(object):
-
-    def __init__(self):
-        self.__coefficient = dict()
+    _coefficient = dict()
 
     def get_coef(self, name_coef: str):
         return self.__coefficient[name_coef]
 
     def get_dict_coeff(self):
         return self.__coefficient.copie()
+
+    def get_name_coef(self):
+        return self.__coefficient.keys()
 
     def default_coef(self):
         self.__coefficient = {
@@ -48,4 +49,5 @@ if __name__ == "__main__":
     te.add_coef("pc-large", 1.9, 2.3)
     te.remove_coef("pc-statdart")
     te.list_coef()
+    te.get_name_coef()
     print( "Pc Large : ", te.get_coef("pc-large"))
