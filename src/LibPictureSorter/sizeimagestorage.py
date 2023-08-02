@@ -2,23 +2,23 @@ class Size_image_storage(object):
     _coefficient = dict()
 
     def get_coef(self, name_coef: str):
-        return self.__coefficient[name_coef]
+        return self._coefficient[name_coef]
 
     def get_dict_coeff(self):
-        return self.__coefficient.copie()
+        return self._coefficient.copie()
 
     def get_name_coef(self):
-        return self.__coefficient.keys()
+        return self._coefficient.keys()
 
     def default_coef(self):
-        self.__coefficient = {
+        self._coefficient = {
             "pc-statdart" : [1.5, 1.9],
             "pc-old" : [0.9, 1.5],
             "mobile" : [0.0, 0.9],
         }
 
     def add_coef(self, name_coef: str, min_coef: float, max_coef: float):
-        self.__coefficient[name_coef] = [min_coef, max_coef]
+        self._coefficient[name_coef] = [min_coef, max_coef]
 
     def add_auto_coef_by_resolution(
         self,
@@ -34,10 +34,10 @@ class Size_image_storage(object):
         self.add_coef(name_coef, low_coef, max_coef)
 
     def remove_coef(self, name_coef):
-        del self.__coefficient[name_coef]
+        del self._coefficient[name_coef]
 
     def list_coef(self):
-        print(self.__coefficient)
+        print(self._coefficient)
 
     def calculate_coef(self, width: int, height: int) -> float:
         coef = width / height
@@ -45,8 +45,8 @@ class Size_image_storage(object):
 
     def sort_coef(self, coef: float):
         ret_coef = "Other"
-        for name_coef in self.__coefficient:
-            if self.__coefficient[name_coef][0] <= coef < self.__coefficient[name_coef][1] :
+        for name_coef in self._coefficient:
+            if self._coefficient[name_coef][0] <= coef < self._coefficient[name_coef][1] :
                 ret_coef = name_coef
                 break
 
