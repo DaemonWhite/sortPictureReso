@@ -15,7 +15,9 @@ def help():
     render_help("c", "copie", "Enable copie mode by default move")
     render_help("i", "path_in", "Paht for the search picture")
     render_help("o", "path_output", "Path for the move picture")
-    render_help("p", "preference", "Configuration sofware")
+    render_help("rc", "remove-ceofficient", "remove coefficient")
+    render_help("ac", "add-coefficient", "add coefficient")
+    render_help("p", "path-change", "change default path in and out")
     render_help("l", "list-configuration", "Print configuration")
     render_help("v", "version", "Version system")
     render_help("h", "help", "Help mode")
@@ -42,19 +44,31 @@ def ls_conf(cps: ConfigPictureSorter):
 def main():
     cps = ConfigPictureSorter()
     cps.load()
+    path_in = ""
+    path_out = ""
 
     if cps.get_default():
-        cps.add_coefficient("pc-stadart", 1800, 1200 ,2960, 1040)
-        cps.add_coefficient("pc-old", 1090, 1200 , 1800, 1200)
-        cps.add_coefficient("phone", 0, 0 , 1090, 1200)
-        cps.add_coefficient("pc-large", 2960, 1040 , 1090, 1200)
+        pc_old = [1800, 1200]
+        phone = [1090, 1200]
+        null = 0
+        pc_standar = [2000, 1000]
+        pc_large = [2960, 1040]
+        ps = Picture_sorter()
+        cps.modify_path_in(ps.get_picture_in_path())
+        cps.modify_path_out(ps.get_picture_out_path())
+        cps.add_coefficient("pc-stadart", pc_old[0], pc_old[1] , pc_standar[0], pc_standar[1])
+        cps.add_coefficient("pc-old", phone[0], phone[1] , pc_old[0], pc_old[1])
+        cps.add_coefficient("phone", null, null , phone[0], phone[1])
+        cps.add_coefficient("pc-large", pc_standar[0], pc_standar[1] , pc_large[0], pc_large[1])
         cps.disable_default()
         cps.save()
+        del ps
+
+    path_in = cps.get_path_in()
+    path_out = cps.get_path_out()
 
     argument = sys.argv.copy()
     is_copie = False
-    path_in = ""
-    path_out = ""
     index = 1
     penality = 0
     while index < len(argument):
@@ -89,8 +103,15 @@ def main():
         index += 1
 
     ps = Picture_sorter(path_in, path_out)
+
+    ls_coef = cps.get_all_coefficient()
+    for name_coef in ls_coef:
+        ps.add_coef(name_coef,
+        ls_coef[name_coef]["min_coef"],
+        ls_coef[name_coef]["max_coef"])
+    del ls_coef
+
     ps.enabled_copie_mode(is_copie)
-    ps.default_coef()
     ps.search_images()
     ps.generate__list_sort_image()
     ps.resolve()
