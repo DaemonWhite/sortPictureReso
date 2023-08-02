@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:foaf="http://xmlns.com/foaf/0.1/"
+         xmlns:gnome="http://api.gnome.org/doap-extensions#"
+         xmlns="http://usefulinc.com/ns/doap#">
+
+  <name>pictureSorter</name>
+  <shortdesc xml:lang="en">Auto sort picture by ratio</shortdesc>
+  <description xml:lang="en">
+Ratio picture au sort in great folder
+  </description>
+
+  <homepage rdf:resource="https://github.com/DaemonWhite/sortPictureReso" />
+  <download-page rdf:resource="https://github.com/DaemonWhite/sortPictureReso" />
+  <bug-database rdf:resource="https://github.com/DaemonWhite/sortPictureReso/issues/" />
+
+  <programming-language>Python</programming-language>
+
+  <maintainer>
+    <foaf:Person>
+      <foaf:name>DaemonWhite</foaf:name>
+    </foaf:Person>
+  </maintainer>
+</Project>
