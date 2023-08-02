@@ -7,4 +7,8 @@ setup(
     author='DaemonWhite',
     author_email='votre@email.com',
     packages=find_packages(),
+    install_requires=[
+        "Pillow==10.0.0",
+        "pyxdg==0.28",
+    ],
 )
