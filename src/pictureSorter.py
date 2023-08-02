@@ -1,3 +1,4 @@
+#!/bin/python3
 import sys
 import os
 
@@ -38,8 +39,14 @@ def ls_conf(cps: ConfigPictureSorter):
         coefs[coef]["min_coef"],
         coefs[coef]["max_width"],
         coefs[coef]["max_height"],
-        coefs[coef]["max_coef"])
-        )
+        coefs[coef]["max_coef"]))
+
+# TODO Ajout de la configuration non implémentée
+# - Ajout coefficient
+# - Reset
+# - Suprimer coeffiient
+# - Changer les chemins par défault
+# - Ajouter le meson
 
 def main():
     cps = ConfigPictureSorter()
