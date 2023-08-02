@@ -94,7 +94,9 @@ class Picture_sorter(Size_image_storage):
                         return path.strip('"')
 
     def xdg_picture_path_windows(self):
-        pass
+        # TODO Ajout du suport windows
+        # Retourne temporairement le chemin courant
+        return self.DEFAULT_PICTURE_OUT
 
     def search_images(self):
         files = os.listdir(self.__picture_in)

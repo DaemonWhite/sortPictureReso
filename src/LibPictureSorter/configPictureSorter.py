@@ -27,6 +27,7 @@ class ConfigPictureSorter(object):
             self.save()
 
     def __get_xdg_path(self):
+        # TODO Compatible windows
         return xdg.BaseDirectory.xdg_config_home
 
     def modify_path_in(self, path):
