@@ -22,8 +22,6 @@ class Picture_sorter(Size_image_storage):
 
         self.__files_images = list()
 
-        self.enabled_copie_mode()
-
         self.set_picture_in_path(picture_in)
         self.set_picture_out_path(picutre_out)
 
