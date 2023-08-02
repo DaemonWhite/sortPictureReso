@@ -33,7 +33,7 @@ class ConfigPictureSorter(object):
         self.__json_data["path_in"] = path
 
     def modify_path_out(self, path):
-        self.__json_data["path_in"] = path
+        self.__json_data["path_out"] = path
 
     def __calc_ceof(self, w, h) -> float:
         calc = 0
