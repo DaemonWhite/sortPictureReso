@@ -38,7 +38,7 @@ class ConfigPictureSorter(object):
             path_conf_user = "./"
 
         if system == "Windows":
-            path_conf_user = os.path.join(path_conf_user, "..\AppData\Local")
+            path_conf_user = os.path.join(path_conf_user.split("\.config")[0], "\AppData\Local")
         return path_conf_user
 
     def modify_path_in(self, path):
@@ -101,7 +101,6 @@ class ConfigPictureSorter(object):
 
     def save(self):
         path = os.path.join(self.__folder_file, self.__name_file)
-        print(path)
         with open(path, 'w') as json_file:
             json.dump(self.__json_data, json_file)
 
