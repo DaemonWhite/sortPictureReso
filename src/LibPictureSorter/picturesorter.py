@@ -6,7 +6,16 @@ import xdg.BaseDirectory
 from PIL import Image
 
 from .sizeimagestorage import Size_image_storage
+# TODO Ajout du nombre d'image à d'éplacer
+# Get de recuperation du nombre d'image courante
+# Variaible du comptage d'image
+# Variable du nombre max d'image
 
+#TODO Recurssif mode
+# Ajout d'une varialble
+# Ajout d'une méthode
+
+# TODO ajout d'un mode verbeux
 class Picture_sorter(Size_image_storage):
 
     DEFAULT_PICTURE_OUT = "./"
@@ -95,8 +104,6 @@ class Picture_sorter(Size_image_storage):
                         return path.strip('"')
 
     def xdg_picture_path_windows(self):
-        # TODO Ajout du suport windows
-        # Retourne temporairement le chemin courant
         user_path = os.path.join(
             xdg.BaseDirectory.xdg_config_home.split('.config')[0],
             "Pictures")

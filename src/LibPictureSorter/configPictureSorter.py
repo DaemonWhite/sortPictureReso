@@ -3,9 +3,9 @@ import json
 import platform
 import xdg.BaseDirectory
 
-# On veut sauvegarder les chemins in/out
-# On veut Les stocker resolution avec le coef
-#
+#TODO Stocker des inforamtions suplémentaires
+# Recupérer des infos à la demande
+# Stocker des infos à la demande
 
 class ConfigPictureSorter(object):
     def __init__(self, name = "PictureSorter"):
