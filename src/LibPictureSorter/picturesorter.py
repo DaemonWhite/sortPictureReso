@@ -1,6 +1,7 @@
 import os
 import platform
 import shutil
+import xdg.BaseDirectory
 
 from PIL import Image
 
@@ -54,7 +55,7 @@ class Picture_sorter(Size_image_storage):
         self.__picture_in = path_picture
 
     def default_out_picture(self):
-        path_picture = self.xdg_picture_path() + "/out" # Si aucun système n'est detecter
+        path_picture = os.path.join(self.xdg_picture_path(), "out") # Si aucun système n'est detecter
 
         self.__picture_out = path_picture
 
@@ -77,7 +78,7 @@ class Picture_sorter(Size_image_storage):
 
     def xdg_picture_path_linux(self):
         DIRECTORY_NAME = "PICTURES"
-        xdg_config_home = os.getenv('XDG_CONFIG_HOME', os.path.expanduser('~/.config'))
+        xdg_config_home = xdg.BaseDirectory.xdg_config_home
         xdg_user_dirs_file = os.path.join(xdg_config_home, 'user-dirs.dirs')
 
         if not os.path.exists(xdg_user_dirs_file):
@@ -96,7 +97,10 @@ class Picture_sorter(Size_image_storage):
     def xdg_picture_path_windows(self):
         # TODO Ajout du suport windows
         # Retourne temporairement le chemin courant
-        return self.DEFAULT_PICTURE_OUT
+        user_path = os.path.join(
+            xdg.BaseDirectory.xdg_config_home.split('.config')[0],
+            "Pictures")
+        return user_path
 
     def search_images(self):
         files = os.listdir(self.__picture_in)
@@ -121,6 +125,7 @@ class Picture_sorter(Size_image_storage):
                     xsize, ysize = im.size
                     coef = self.calculate_coef(xsize, ysize)
             except OSError:
+
                 print("Erreur : Impossible de récupérer l'image : {path_image}")
 
             if coef > -1:
