@@ -81,7 +81,12 @@ class Application(object):
         self.__cps.load()
         self.__path_in = ""
         self.__path_out = ""
-        self.__sort = True
+
+        self.__call_sort = True
+        self.__call_help = False
+        self.__call_conf_pah = False
+        self.__call_add_coef = False
+        self.__call_remove_coef = False
 
         if self.__cps.get_default():
             self.reset()
@@ -92,6 +97,9 @@ class Application(object):
         argument = sys.argv.copy()
         self.__copy = False
 
+    def set__callback_help(self, method):
+        self.__callback_help = method
+
     def set_path_in(self, *path_in):
         self.__path_in = path_in[0]
 
@@ -100,6 +108,24 @@ class Application(object):
 
     def ennabled_copy(self, enable=True):
         self.__copy = enable
+
+    def enable_add_coef(self):
+        self.__call_add_coef = True
+
+    def enable_remove_coef(self):
+        self.__call_remove_coef = True
+
+    def enable_help(self):
+        self.__call_help = True
+
+    def add_coef(self):
+        pass
+
+    def remove_coef(self):
+        pass
+
+    def __callback_help(self):
+        pass
 
     def reset(self):
         pc_old = [1800, 1200]
@@ -142,7 +168,24 @@ class Application(object):
         print("Script use XDG user")
 
     def run(self):
-        pass
+        if self.__call_help:
+            self.__callback_help()
+            self.__call_sort=False
+
+        if self.__call_conf_pah:
+            self.conf_path()
+            self.__call_sort=False
+
+        if self.__call_add_coef:
+            self.add_coef()
+            self.__call_sort=False
+
+        if self.__call_remove_coef:
+            self.remove_coef()
+            self.__call_sort=False
+
+        if self.__call_sort:
+            self.sort()
 
     def conf_path(self):
         #TODO Ajout de la verification d'erreur
@@ -175,6 +218,7 @@ def main():
     #TODO Ajout la possibiliter de desactiver le trie
     app = Application()
     ac= ArguemntControl()
+    app.set__callback_help(ac.ls_help)
     ac.add_arguemnt("copy", "c", "Enable copie mode by default move", app.ennabled_copy)
     ac.add_arguemnt("path-change", "p", "change default path in and out", ac.no_implemented, 0)
     ac.add_arguemnt("path_in", "i", "Paht for the search picture",  app.set_path_in, 1)
@@ -184,9 +228,9 @@ def main():
     ac.add_arguemnt("default", "d", "Default value of this app", app.reset)
     ac.add_arguemnt("list-configuration", "l", "Print configuration", app.ls_conf)
     ac.add_arguemnt("version", "v", "Version system", app.version)
-    ac.add_arguemnt("help", "h", "List all command", ac.ls_help)
+    ac.add_arguemnt("help", "h", "List all command", app.enable_help)
     ac.run()
-    app.sort()
+    app.run()
 
     #     elif argument[index]=="-i" or argument[index]=="--path_in":
     #         try:
