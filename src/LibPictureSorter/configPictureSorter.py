@@ -1,5 +1,6 @@
 import os
 import json
+import platform
 import xdg.BaseDirectory
 
 # On veut sauvegarder les chemins in/out
@@ -27,8 +28,18 @@ class ConfigPictureSorter(object):
             self.save()
 
     def __get_xdg_path(self):
-        # TODO Compatible windows
-        return xdg.BaseDirectory.xdg_config_home
+        path_conf_user = "./"
+        system = platform.system()
+
+        try:
+            path_conf_user = xdg.BaseDirectory.xdg_config_home
+        except:
+            print("Warning: no conf path detected")
+            path_conf_user = "./"
+
+        if system == "Windows":
+            path_conf_user = os.path.join(path_conf_user, "..\AppData\Local")
+        return path_conf_user
 
     def modify_path_in(self, path):
         self.__json_data["path_in"] = path
