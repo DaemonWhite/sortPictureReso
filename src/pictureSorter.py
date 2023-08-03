@@ -4,136 +4,209 @@ import os
 
 from LibPictureSorter import Picture_sorter, ConfigPictureSorter, Size_image_storage
 
-def version():
-    print("Version : 0.0.3")
-    print("Script By DaemonWhite")
-    print("Script use XDG user")
 
-def render_help(argument, complet_argument, descritpion):
-    print("-{} --{}\t{}".format(argument, complet_argument, descritpion))
-
-def help():
-    render_help("c", "copie", "Enable copie mode by default move")
-    render_help("i", "path_in", "Paht for the search picture")
-    render_help("o", "path_output", "Path for the move picture")
-    render_help("rc", "remove-ceofficient", "remove coefficient")
-    render_help("ac", "add-coefficient", "add coefficient")
-    render_help("d", "default", "Default value of this app")
-    render_help("p", "path-change", "change default path in and out")
-    render_help("l", "list-configuration", "Print configuration")
-    render_help("v", "version", "Version system")
-    render_help("h", "help", "Help mode")
-
-def ls_conf(cps: ConfigPictureSorter):
-    print("\n-- PATH --")
-    print("Path input : {}".format(cps.get_path_in()))
-    print("Path output : {}".format(cps.get_path_out()))
-    print("\n-- CONFIGUATION --")
-    print("copy : {}".format(cps.get_copy()))
-    print("\n-- COEF --")
-    coefs = cps.get_all_coefficient()
-    for coef in coefs:
-        print("{} -->\t Min : {}x{} -- {}; Max : {}x{} -- {};"
-        .format(coef,
-        coefs[coef]["min_width"],
-        coefs[coef]["min_height"],
-        coefs[coef]["min_coef"],
-        coefs[coef]["max_width"],
-        coefs[coef]["max_height"],
-        coefs[coef]["max_coef"]))
 
 # TODO Ajout de la configuration non implémentée
 # - Ajout coefficient
-# - Reset
 # - Suprimer coeffiient
 # - Changer les chemins par défault
 # - Ajouter le meson
 
-def reset(cps: ConfigPictureSorter):
-    pc_old = [1800, 1200]
-    phone = [1090, 1200]
-    null = 0
-    pc_standar = [2000, 1000]
-    pc_large = [2960, 1040]
-    ps = Picture_sorter()
-    cps.modify_path_in(ps.get_picture_in_path())
-    cps.modify_path_out(ps.get_picture_out_path())
-    cps.add_coefficient("pc-stadart", pc_old[0], pc_old[1] , pc_standar[0], pc_standar[1])
-    cps.add_coefficient("pc-old", phone[0], phone[1] , pc_old[0], pc_old[1])
-    cps.add_coefficient("phone", null, null , phone[0], phone[1])
-    cps.add_coefficient("pc-large", pc_standar[0], pc_standar[1] , pc_large[0], pc_large[1])
-    cps.disable_default()
-    cps.save()
-    del ps
+class ArguemntControl(object):
+    def __init__(self):
+        self.__dict_argument = dict()
+        self.__argument = sys.argv.copy()
+        self.__index = 1
 
-def conf_path():
-    #TODO Ajout de la verification d'erreur
-    path_in = input("Entrer le chemin par defaut pour chercher des images")
-    path_out = input("Entrer le chemin par defaut pour la sortir des images")
+    def add_arguemnt(self,
+            name: str,
+            litle_name: str,
+            description: str,
+            methode,
+            option=0):
+        self.__dict_argument[("--" + name)] = {
+            'litle_name' : ("-" +litle_name),
+            'description' : description,
+            'methode' : methode,
+            'option' : option
+        }
+
+    def ls_help(self):
+        for name_arg in self.__dict_argument:
+            print("{}\t {}\t\t{}"
+                .format(
+                    self.__dict_argument[name_arg]['litle_name'],
+                    name_arg,
+                    self.__dict_argument[name_arg]['description']
+                )
+            )
+
+    def no_implemented(self):
+        print("Error not implemented options")
+
+    def run(self):
+        argument = []
+        missing = 0
+        max_missing = len(self.__dict_argument)
+        while self.__index < len(self.__argument):
+            for name_arg in self.__dict_argument:
+                if  (
+                    name_arg==self.__argument[self.__index]
+                    or self.__dict_argument[name_arg]['litle_name']
+                    ==self.__argument[self.__index]
+                ):
+                    for option in range(0, self.__dict_argument[name_arg]['option']):
+                        self.__index +=1
+                        argument.append(self.__argument[self.__index])
+                    self.__dict_argument[name_arg]['methode'](*argument)
+                    break
+                else:
+                    missing += 1
+            if missing >= max_missing:
+                print("Error missing command : {}"
+                    .format(self.__argument[self.__index])
+                )
+                break
+            else:
+                missing = 0
+
+            self.__index +=1
+
+
+
+class Application(object):
+
+    def __init__(self,):
+        self.__cps = ConfigPictureSorter()
+        self.__cps.load()
+        self.__path_in = ""
+        self.__path_out = ""
+        self.__sort = True
+
+        if self.__cps.get_default():
+            self.reset()
+
+        path_in = self.__cps.get_path_in()
+        path_out = self.__cps.get_path_out()
+
+        argument = sys.argv.copy()
+        self.__copy = False
+
+    def set_path_in(self, *path_in):
+        self.__path_in = path_in[0]
+
+    def set_path_out(self, *path_out):
+        self.__path_out = path_out[0]
+
+    def ennabled_copy(self, enable=True):
+        self.__copy = enable
+
+    def reset(self):
+        pc_old = [1800, 1200]
+        phone = [1090, 1200]
+        null = 0
+        pc_standar = [2000, 1000]
+        pc_large = [2960, 1040]
+        ps = Picture_sorter()
+        self.__cps.modify_path_in(ps.get_picture_in_path())
+        self.__cps.modify_path_out(ps.get_picture_out_path())
+        self.__cps.add_coefficient("pc-stadart", pc_old[0], pc_old[1] , pc_standar[0], pc_standar[1])
+        self.__cps.add_coefficient("pc-old", phone[0], phone[1] , pc_old[0], pc_old[1])
+        self.__cps.add_coefficient("phone", null, null , phone[0], phone[1])
+        self.__cps.add_coefficient("pc-large", pc_standar[0], pc_standar[1] , pc_large[0], pc_large[1])
+        self.__cps.disable_default()
+        self.__cps.save()
+        del ps
+
+    def ls_conf(self):
+        print("\n-- PATH --")
+        print("Path input : {}".format(self.__cps.get_path_in()))
+        print("Path output : {}".format(self.__cps.get_path_out()))
+        print("\n-- CONFIGUATION --")
+        print("copy : {}".format(self.__cps.get_copy()))
+        print("\n-- COEF --")
+        coefs = self.__cps.get_all_coefficient()
+        for coef in coefs:
+            print("{} -->\t Min : {}x{} -- {}; Max : {}x{} -- {};"
+            .format(coef,
+            coefs[coef]["min_width"],
+            coefs[coef]["min_height"],
+            coefs[coef]["min_coef"],
+            coefs[coef]["max_width"],
+            coefs[coef]["max_height"],
+            coefs[coef]["max_coef"]))
+
+    def version(self):
+        print("Version : 0.0.4")
+        print("Script By DaemonWhite")
+        print("Script use XDG user")
+
+    def run(self):
+        pass
+
+    def conf_path(self):
+        #TODO Ajout de la verification d'erreur
+        path_in = input("Entrer le chemin par defaut pour chercher des images")
+        path_out = input("Entrer le chemin par defaut pour la sortir des images")
+
+    def sort(self):
+        ps = Picture_sorter(self.__path_in, self.__path_out)
+
+        ls_coef = self.__cps.get_all_coefficient()
+        for name_coef in ls_coef:
+            ps.add_coef(name_coef,
+            ls_coef[name_coef]["min_coef"],
+            ls_coef[name_coef]["max_coef"])
+        del ls_coef
+
+        ps.enabled_copie_mode(self.__copy)
+        ps.search_images()
+        ps.generate__list_sort_image()
+        ps.resolve()
+        ps.apply_resolve()
+
+def teste():
+    print("tu es beau")
+
+def te(*path):
+    print("tu es beau {}".format(path[0]))
 
 def main():
-    cps = ConfigPictureSorter()
-    cps.load()
-    path_in = ""
-    path_out = ""
+    #TODO Ajout la possibiliter de desactiver le trie
+    app = Application()
+    ac= ArguemntControl()
+    ac.add_arguemnt("copy", "c", "Enable copie mode by default move", app.ennabled_copy)
+    ac.add_arguemnt("path-change", "p", "change default path in and out", ac.no_implemented, 0)
+    ac.add_arguemnt("path_in", "i", "Paht for the search picture",  app.set_path_in, 1)
+    ac.add_arguemnt("path_out", "o", "Paht for the out picture", app.set_path_out, 1)
+    ac.add_arguemnt("remove-ceofficien", "rc", "remove coefficient", ac.no_implemented)
+    ac.add_arguemnt("add-coefficient", "ac", "add coefficient", ac.no_implemented)
+    ac.add_arguemnt("default", "d", "Default value of this app", app.reset)
+    ac.add_arguemnt("list-configuration", "l", "Print configuration", app.ls_conf)
+    ac.add_arguemnt("version", "v", "Version system", app.version)
+    ac.add_arguemnt("help", "h", "List all command", ac.ls_help)
+    ac.run()
+    app.sort()
 
-    if cps.get_default():
-        reset()
+    #     elif argument[index]=="-i" or argument[index]=="--path_in":
+    #         try:
+    #             exist_folder = os.path.isdir(argument[index + 1])
+    #         except:
+    #             exist_folder = False
+    #         if not exist_folder:
+    #             print("Erreur : dossier non existant")
+    #             return 1
+    #         path_in = argument[index + 1]
+    #         index += 1
+    #     elif argument[index]=="-o" or argument[index]=="--path_out":
+    #         try:
+    #             path_out = argument[index + 1]
+    #             index += 1
+    #         except:
+    #             print("Erreur : Chemin non définie")
+    #             return 1
 
-    path_in = cps.get_path_in()
-    path_out = cps.get_path_out()
 
-    argument = sys.argv.copy()
-    is_copie = False
-    index = 1
-    penality = 0
-    while index < len(argument):
-        if argument[index]=="-h" or argument[index]=="--help":
-            help()
-        elif argument[index]=="-v" or argument[index]=="--version":
-            version()
-        elif argument[index]=="-c" or argument[index]=="--copie":
-            is_copie = True
-        elif argument[index]=="-l" or argument[index]=="--list-configuration":
-            ls_conf(cps)
-        elif argument[index]=="-d" or argument[index]=="--default":
-            reset(cps)
-        elif argument[index]=="-i" or argument[index]=="--path_in":
-            try:
-                exist_folder = os.path.isdir(argument[index + 1])
-            except:
-                exist_folder = False
-            if not exist_folder:
-                print("Erreur : dossier non existant")
-                return 1
-            path_in = argument[index + 1]
-            index += 1
-        elif argument[index]=="-o" or argument[index]=="--path_out":
-            try:
-                path_out = argument[index + 1]
-                index += 1
-            except:
-                print("Erreur : Chemin non définie")
-                return 1
-        else:
-            print("Argument inconnue {}".format(argument[index]))
-            return 1
-        index += 1
-
-    ps = Picture_sorter(path_in, path_out)
-
-    ls_coef = cps.get_all_coefficient()
-    for name_coef in ls_coef:
-        ps.add_coef(name_coef,
-        ls_coef[name_coef]["min_coef"],
-        ls_coef[name_coef]["max_coef"])
-    del ls_coef
-
-    ps.enabled_copie_mode(is_copie)
-    ps.search_images()
-    ps.generate__list_sort_image()
-    ps.resolve()
-    ps.apply_resolve()
 
 if __name__ == "__main__":
     main()
