@@ -123,6 +123,9 @@ class Application(object):
     def enable_remove_coef(self):
         self.__call_remove_coef = True
 
+    def enable_conf_path(self):
+        self.__call_conf_pah = True
+
     def enable_help(self):
         self.__call_help = True
 
@@ -196,9 +199,32 @@ class Application(object):
             self.sort()
 
     def conf_path(self):
-        #TODO Ajout de la verification d'erreur
-        path_in = input("Entrer le chemin par defaut pour chercher des images")
-        path_out = input("Entrer le chemin par defaut pour la sortir des images")
+        #TODO Autocomplet path
+        good_path = False
+        print("-- Change default path --")
+        print("Laisser vide si pas de changement")
+        print("Current path in : {}".format(self.__cps.get_path_in()))
+        print("Current path out : {}".format(self.__cps.get_path_out()))
+        while not good_path:
+            path_in = input("Chemin pout chercher les images: ")
+            good_path = os.path.isdir(path_in)
+
+            if path_in == "":
+                path_in = self.__path_in
+                good_path = True
+            if not good_path:
+                print('Path incorect')
+
+        path_out = input("Entrer le chemin pour la sortir des images : ")
+        if path_out == "":
+            path_out = self.__path_out
+
+        self.__path_in = path_in
+        self.__path_out = path_out
+
+        self.__cps.modify_path_in(path_in)
+        self.__cps.modify_path_out(path_out)
+        self.__cps.save()
 
     def sort(self):
         ps = Picture_sorter(self.__path_in, self.__path_out)
@@ -222,7 +248,7 @@ def main():
     ac= ArguemntControl()
     app.set__callback_help(ac.ls_help)
     ac.add_arguemnt("copy", "c", "Enable copie mode by default move", app.ennabled_copy)
-    ac.add_arguemnt("path-change", "p", "change default path in and out", ac.no_implemented, 0)
+    ac.add_arguemnt("path-change", "p", "change default path in and out", app.enable_conf_path)
     ac.add_arguemnt("path_in", "i", "Paht for the search picture",  app.set_path_in, 1)
     ac.add_arguemnt("path_out", "o", "Paht for the out picture", app.set_path_out, 1)
     ac.add_arguemnt("remove-ceofficien", "rc", "remove coefficient", ac.no_implemented)
@@ -237,3 +263,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
