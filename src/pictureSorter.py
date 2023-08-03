@@ -101,6 +101,14 @@ class Application(object):
         self.__callback_help = method
 
     def set_path_in(self, *path_in):
+        exist_folder = False
+        try:
+            exist_folder = os.path.isdir(path_in[0])
+        except:
+            exist_folder = False
+        if not exist_folder:
+            print("Erreur : Not existing folder")
+            return 1
         self.__path_in = path_in[0]
 
     def set_path_out(self, *path_out):
@@ -208,12 +216,6 @@ class Application(object):
         ps.resolve()
         ps.apply_resolve()
 
-def teste():
-    print("tu es beau")
-
-def te(*path):
-    print("tu es beau {}".format(path[0]))
-
 def main():
     #TODO Ajout la possibiliter de desactiver le trie
     app = Application()
@@ -231,25 +233,6 @@ def main():
     ac.add_arguemnt("help", "h", "List all command", app.enable_help)
     ac.run()
     app.run()
-
-    #     elif argument[index]=="-i" or argument[index]=="--path_in":
-    #         try:
-    #             exist_folder = os.path.isdir(argument[index + 1])
-    #         except:
-    #             exist_folder = False
-    #         if not exist_folder:
-    #             print("Erreur : dossier non existant")
-    #             return 1
-    #         path_in = argument[index + 1]
-    #         index += 1
-    #     elif argument[index]=="-o" or argument[index]=="--path_out":
-    #         try:
-    #             path_out = argument[index + 1]
-    #             index += 1
-    #         except:
-    #             print("Erreur : Chemin non définie")
-    #             return 1
-
 
 
 if __name__ == "__main__":
