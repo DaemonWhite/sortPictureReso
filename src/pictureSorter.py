@@ -165,7 +165,18 @@ class Application(object):
                 self.__cps.save()
 
     def remove_coef(self):
-        pass
+        self.ls_coef()
+        name_coef = input("Give the name of the coef to be deleted : ")
+        is_save = False
+        for coef_keys in self.__cps.get_all_coefficient():
+            if coef_keys == name_coef:
+                self.__cps.remove_coefficient(name_coef)
+                self.__cps.save()
+                print("Safe is sucessfull")
+                is_save=True
+
+        if not is_save:
+            print("Error no key tri in configuration")
 
     def __callback_help(self):
         pass
@@ -286,7 +297,7 @@ def main():
     ac.add_arguemnt("path-change", "p", "change default path in and out", app.enable_conf_path)
     ac.add_arguemnt("path_in", "i", "Paht for the search picture",  app.set_path_in, 1)
     ac.add_arguemnt("path_out", "o", "Paht for the out picture", app.set_path_out, 1)
-    ac.add_arguemnt("remove-ceofficien", "rc", "remove coefficient", ac.no_implemented)
+    ac.add_arguemnt("remove-ceofficien", "rc", "remove coefficient", app.enable_remove_coef)
     ac.add_arguemnt("add-coefficient", "ac", "add coefficient", app.enable_add_coef)
     ac.add_arguemnt("default", "d", "Default value of this app", app.reset)
     ac.add_arguemnt("list-configuration", "l", "Print configuration", app.ls_conf)
