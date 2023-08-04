@@ -5,7 +5,6 @@ import os
 from LibPictureSorter import Picture_sorter, ConfigPictureSorter, Size_image_storage
 
 
-
 # TODO Ajout de la configuration non implémentée
 # - Ajout coefficient
 # - Suprimer coeffiient
@@ -18,26 +17,23 @@ class ArguemntControl(object):
         self.__argument = sys.argv.copy()
         self.__index = 1
 
-    def add_arguemnt(self,
-            name: str,
-            litle_name: str,
-            description: str,
-            methode,
-            option=0):
+    def add_arguemnt(
+        self, name: str, litle_name: str, description: str, methode, option=0
+    ):
         self.__dict_argument[("--" + name)] = {
-            'litle_name' : ("-" +litle_name),
-            'description' : description,
-            'methode' : methode,
-            'option' : option
+            "litle_name": ("-" + litle_name),
+            "description": description,
+            "methode": methode,
+            "option": option,
         }
 
     def ls_help(self):
         for name_arg in self.__dict_argument:
-            print("{}\t {}\t\t{}"
-                .format(
-                    self.__dict_argument[name_arg]['litle_name'],
+            print(
+                "{}\t {}\t\t{}".format(
+                    self.__dict_argument[name_arg]["litle_name"],
                     name_arg,
-                    self.__dict_argument[name_arg]['description']
+                    self.__dict_argument[name_arg]["description"],
                 )
             )
 
@@ -50,33 +46,33 @@ class ArguemntControl(object):
         max_missing = len(self.__dict_argument)
         while self.__index < len(self.__argument):
             for name_arg in self.__dict_argument:
-                if  (
-                    name_arg==self.__argument[self.__index]
-                    or self.__dict_argument[name_arg]['litle_name']
-                    ==self.__argument[self.__index]
+                if (
+                    name_arg == self.__argument[self.__index]
+                    or self.__dict_argument[name_arg]["litle_name"]
+                    == self.__argument[self.__index]
                 ):
-                    for option in range(0, self.__dict_argument[name_arg]['option']):
-                        self.__index +=1
+                    for option in range(0, self.__dict_argument[name_arg]["option"]):
+                        self.__index += 1
                         argument.append(self.__argument[self.__index])
-                    self.__dict_argument[name_arg]['methode'](*argument)
+                    self.__dict_argument[name_arg]["methode"](*argument)
                     break
                 else:
                     missing += 1
             if missing >= max_missing:
-                print("Error missing command : {}"
-                    .format(self.__argument[self.__index])
+                print(
+                    "Error missing command : {}".format(self.__argument[self.__index])
                 )
                 break
             else:
                 missing = 0
 
-            self.__index +=1
-
+            self.__index += 1
 
 
 class Application(object):
-
-    def __init__(self,):
+    def __init__(
+        self,
+    ):
         self.__cps = ConfigPictureSorter()
         self.__cps.load()
         self.__path_in = ""
@@ -143,16 +139,16 @@ class Application(object):
 
             print("--NEW COEF--")
             print("\nName : ", name_coef)
-            print("min : {}x{} ={}".format(
-                min_width,
-                min_height,
-                (min_width/min_height)
-            ))
-            print("max : {}x{} ={}".format(
-                max_width,
-                max_height,
-                (max_width/max_height)
-            ))
+            print(
+                "min : {}x{} ={}".format(
+                    min_width, min_height, (min_width / min_height)
+                )
+            )
+            print(
+                "max : {}x{} ={}".format(
+                    max_width, max_height, (max_width / max_height)
+                )
+            )
             yes = input("Configuration is correct ? (y for yes) : ").lower()
             if yes == "y":
                 self.__cps.add_coefficient(
@@ -173,7 +169,7 @@ class Application(object):
                 self.__cps.remove_coefficient(name_coef)
                 self.__cps.save()
                 print("Safe is sucessfull")
-                is_save=True
+                is_save = True
 
         if not is_save:
             print("Error no key tri in configuration")
@@ -190,10 +186,14 @@ class Application(object):
         ps = Picture_sorter()
         self.__cps.modify_path_in(ps.get_picture_in_path())
         self.__cps.modify_path_out(ps.get_picture_out_path())
-        self.__cps.add_coefficient("pc-stadart", pc_old[0], pc_old[1] , pc_standar[0], pc_standar[1])
-        self.__cps.add_coefficient("pc-old", phone[0], phone[1] , pc_old[0], pc_old[1])
-        self.__cps.add_coefficient("phone", null, null , phone[0], phone[1])
-        self.__cps.add_coefficient("pc-large", pc_standar[0], pc_standar[1] , pc_large[0], pc_large[1])
+        self.__cps.add_coefficient(
+            "pc-stadart", pc_old[0], pc_old[1], pc_standar[0], pc_standar[1]
+        )
+        self.__cps.add_coefficient("pc-old", phone[0], phone[1], pc_old[0], pc_old[1])
+        self.__cps.add_coefficient("phone", null, null, phone[0], phone[1])
+        self.__cps.add_coefficient(
+            "pc-large", pc_standar[0], pc_standar[1], pc_large[0], pc_large[1]
+        )
         self.__cps.disable_default()
         self.__cps.save()
         del ps
@@ -201,15 +201,17 @@ class Application(object):
     def ls_coef(self):
         coefs = self.__cps.get_all_coefficient()
         for coef in coefs:
-            print("{} -->\t Min : {}x{} -- {}; Max : {}x{} -- {};"
-            .format(coef,
-            coefs[coef]["min_width"],
-            coefs[coef]["min_height"],
-            coefs[coef]["min_coef"],
-            coefs[coef]["max_width"],
-            coefs[coef]["max_height"],
-            coefs[coef]["max_coef"]))
-
+            print(
+                "{} -->\t Min : {}x{} -- {}; Max : {}x{} -- {};".format(
+                    coef,
+                    coefs[coef]["min_width"],
+                    coefs[coef]["min_height"],
+                    coefs[coef]["min_coef"],
+                    coefs[coef]["max_width"],
+                    coefs[coef]["max_height"],
+                    coefs[coef]["max_coef"],
+                )
+            )
 
     def ls_conf(self):
         print("\n-- PATH --")
@@ -228,25 +230,25 @@ class Application(object):
     def run(self):
         if self.__call_help:
             self.__callback_help()
-            self.__call_sort=False
+            self.__call_sort = False
 
         if self.__call_conf_pah:
             self.conf_path()
-            self.__call_sort=False
+            self.__call_sort = False
 
         if self.__call_add_coef:
             self.add_coef()
-            self.__call_sort=False
+            self.__call_sort = False
 
         if self.__call_remove_coef:
             self.remove_coef()
-            self.__call_sort=False
+            self.__call_sort = False
 
         if self.__call_sort:
             self.sort()
 
     def conf_path(self):
-        #TODO Autocomplet path
+        # TODO Autocomplet path
         good_path = False
         print("-- Change default path --")
         print("Laisser vide si pas de changement")
@@ -260,7 +262,7 @@ class Application(object):
                 path_in = self.__path_in
                 good_path = True
             if not good_path:
-                print('Path incorect')
+                print("Path incorect")
 
         path_out = input("Entrer le chemin pour la sortir des images : ")
         if path_out == "":
@@ -278,9 +280,11 @@ class Application(object):
 
         ls_coef = self.__cps.get_all_coefficient()
         for name_coef in ls_coef:
-            ps.add_coef(name_coef,
-            ls_coef[name_coef]["min_coef"],
-            ls_coef[name_coef]["max_coef"])
+            ps.add_coef(
+                name_coef,
+                ls_coef[name_coef]["min_coef"],
+                ls_coef[name_coef]["max_coef"],
+            )
         del ls_coef
 
         ps.enabled_copie_mode(self.__copy)
@@ -289,15 +293,20 @@ class Application(object):
         ps.resolve()
         ps.apply_resolve()
 
+
 def main():
     app = Application()
-    ac= ArguemntControl()
+    ac = ArguemntControl()
     app.set__callback_help(ac.ls_help)
     ac.add_arguemnt("copy", "c", "Enable copie mode by default move", app.ennabled_copy)
-    ac.add_arguemnt("path-change", "p", "change default path in and out", app.enable_conf_path)
-    ac.add_arguemnt("path_in", "i", "Paht for the search picture",  app.set_path_in, 1)
+    ac.add_arguemnt(
+        "path-change", "p", "change default path in and out", app.enable_conf_path
+    )
+    ac.add_arguemnt("path_in", "i", "Paht for the search picture", app.set_path_in, 1)
     ac.add_arguemnt("path_out", "o", "Paht for the out picture", app.set_path_out, 1)
-    ac.add_arguemnt("remove-ceofficien", "rc", "remove coefficient", app.enable_remove_coef)
+    ac.add_arguemnt(
+        "remove-ceofficien", "rc", "remove coefficient", app.enable_remove_coef
+    )
     ac.add_arguemnt("add-coefficient", "ac", "add coefficient", app.enable_add_coef)
     ac.add_arguemnt("default", "d", "Default value of this app", app.reset)
     ac.add_arguemnt("list-configuration", "l", "Print configuration", app.ls_conf)
@@ -309,5 +318,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 

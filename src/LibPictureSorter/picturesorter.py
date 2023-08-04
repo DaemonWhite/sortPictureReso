@@ -6,12 +6,13 @@ import xdg.BaseDirectory
 from PIL import Image
 
 from .sizeimagestorage import Size_image_storage
+
 # TODO Ajout du nombre d'image à d'éplacer
 # Get de recuperation du nombre d'image courante
 # Variaible du comptage d'image
 # Variable du nombre max d'image
 
-#TODO Recurssif mode
+# TODO Recurssif mode
 # Ajout d'une varialble
 # Ajout d'une méthode
 
@@ -20,11 +21,10 @@ class Picture_sorter(Size_image_storage):
 
     DEFAULT_PICTURE_OUT = "./"
     __IMAGE_EXTENTION = [".jpg", ".jpeg", ".png", ".gif"]
-    def __init__(self,
-        picture_in = "",
-        picutre_out = ""):
 
-        self.__sort_images = { "Other" : [] }
+    def __init__(self, picture_in="", picutre_out=""):
+
+        self.__sort_images = {"Other": []}
 
         self.__picture_in = self.DEFAULT_PICTURE_OUT
         self.__picture_out = self.DEFAULT_PICTURE_OUT
@@ -64,7 +64,9 @@ class Picture_sorter(Size_image_storage):
         self.__picture_in = path_picture
 
     def default_out_picture(self):
-        path_picture = os.path.join(self.xdg_picture_path(), "out") # Si aucun système n'est detecter
+        path_picture = os.path.join(
+            self.xdg_picture_path(), "out"
+        )  # Si aucun système n'est detecter
 
         self.__picture_out = path_picture
 
@@ -88,25 +90,31 @@ class Picture_sorter(Size_image_storage):
     def xdg_picture_path_linux(self):
         DIRECTORY_NAME = "PICTURES"
         xdg_config_home = xdg.BaseDirectory.xdg_config_home
-        xdg_user_dirs_file = os.path.join(xdg_config_home, 'user-dirs.dirs')
+        xdg_user_dirs_file = os.path.join(xdg_config_home, "user-dirs.dirs")
 
         if not os.path.exists(xdg_user_dirs_file):
-            raise FileNotFoundError("XDG user directories configuration file not found.")
+            raise FileNotFoundError(
+                "XDG user directories configuration file not found."
+            )
 
-        with open(xdg_user_dirs_file, 'r') as f:
+        with open(xdg_user_dirs_file, "r") as f:
             for line in f:
-                if line.startswith(f'XDG_{DIRECTORY_NAME}'):
-                    path = os.path.expanduser(line.split('=', 1)[1].strip().strip('"'))
-                    path_find = path.find('$HOME/')
+                if line.startswith(f"XDG_{DIRECTORY_NAME}"):
+                    path = os.path.expanduser(
+                        line.split("=", 1)[1].strip().strip('"')
+                    )
+                    path_find = path.find("$HOME/")
                     if path_find > -1:
-                        return os.getenv('HOME') + line.split('$HOME', 1)[1].strip().strip('"')
+                        return os.getenv("HOME") + line.split("$HOME", 1)[
+                            1
+                        ].strip().strip('"')
                     else:
                         return path.strip('"')
 
     def xdg_picture_path_windows(self):
         user_path = os.path.join(
-            xdg.BaseDirectory.xdg_config_home.split('.config')[0],
-            "Pictures")
+            xdg.BaseDirectory.xdg_config_home.split(".config")[0], "Pictures"
+        )
         return user_path
 
     def search_images(self):
@@ -151,8 +159,11 @@ class Picture_sorter(Size_image_storage):
             path_out = os.path.join(self.__picture_out, name_dict)
             self.verif_output(path_out)
             for image in self.__sort_images[name_dict]:
-                self.__move_image(src=os.path.join(self.__picture_in , image),
-                dst=os.path.join(path_out, image))
+                self.__move_image(
+                    src=os.path.join(self.__picture_in, image),
+                    dst=os.path.join(path_out, image),
+                )
+
 
 if __name__ == "__main__":
     ps = Picture_sorter()
@@ -163,3 +174,4 @@ if __name__ == "__main__":
     ps.generate__list_sort_image()
     ps.resolve()
     ps.apply_resolve()
+
