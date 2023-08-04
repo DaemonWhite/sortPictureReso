@@ -130,7 +130,39 @@ class Application(object):
         self.__call_help = True
 
     def add_coef(self):
-        pass
+        yes = "n"
+        while yes != "y":
+            self.ls_coef()
+            name_coef = input("Name coef : ")
+
+            min_width = int(input("min width : "))
+            min_height = int(input("min height : "))
+
+            max_width = int(input("max width : "))
+            max_height = int(input("max height : "))
+
+            print("--NEW COEF--")
+            print("\nName : ", name_coef)
+            print("min : {}x{} ={}".format(
+                min_width,
+                min_height,
+                (min_width/min_height)
+            ))
+            print("max : {}x{} ={}".format(
+                max_width,
+                max_height,
+                (max_width/max_height)
+            ))
+            yes = input("Configuration is correct ? (y for yes) : ").lower()
+            if yes == "y":
+                self.__cps.add_coefficient(
+                    name_coef,
+                    min_width,
+                    min_height,
+                    max_width,
+                    max_height,
+                )
+                self.__cps.save()
 
     def remove_coef(self):
         pass
@@ -155,13 +187,7 @@ class Application(object):
         self.__cps.save()
         del ps
 
-    def ls_conf(self):
-        print("\n-- PATH --")
-        print("Path input : {}".format(self.__cps.get_path_in()))
-        print("Path output : {}".format(self.__cps.get_path_out()))
-        print("\n-- CONFIGUATION --")
-        print("copy : {}".format(self.__cps.get_copy()))
-        print("\n-- COEF --")
+    def ls_coef(self):
         coefs = self.__cps.get_all_coefficient()
         for coef in coefs:
             print("{} -->\t Min : {}x{} -- {}; Max : {}x{} -- {};"
@@ -172,6 +198,16 @@ class Application(object):
             coefs[coef]["max_width"],
             coefs[coef]["max_height"],
             coefs[coef]["max_coef"]))
+
+
+    def ls_conf(self):
+        print("\n-- PATH --")
+        print("Path input : {}".format(self.__cps.get_path_in()))
+        print("Path output : {}".format(self.__cps.get_path_out()))
+        print("\n-- CONFIGUATION --")
+        print("copy : {}".format(self.__cps.get_copy()))
+        print("\n-- COEF --")
+        self.ls_coef()
 
     def version(self):
         print("Version : 0.0.4")
@@ -243,7 +279,6 @@ class Application(object):
         ps.apply_resolve()
 
 def main():
-    #TODO Ajout la possibiliter de desactiver le trie
     app = Application()
     ac= ArguemntControl()
     app.set__callback_help(ac.ls_help)
@@ -252,7 +287,7 @@ def main():
     ac.add_arguemnt("path_in", "i", "Paht for the search picture",  app.set_path_in, 1)
     ac.add_arguemnt("path_out", "o", "Paht for the out picture", app.set_path_out, 1)
     ac.add_arguemnt("remove-ceofficien", "rc", "remove coefficient", ac.no_implemented)
-    ac.add_arguemnt("add-coefficient", "ac", "add coefficient", ac.no_implemented)
+    ac.add_arguemnt("add-coefficient", "ac", "add coefficient", app.enable_add_coef)
     ac.add_arguemnt("default", "d", "Default value of this app", app.reset)
     ac.add_arguemnt("list-configuration", "l", "Print configuration", app.ls_conf)
     ac.add_arguemnt("version", "v", "Version system", app.version)
