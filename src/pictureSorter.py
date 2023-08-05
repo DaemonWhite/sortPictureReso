@@ -73,6 +73,7 @@ class Application(object):
     def __init__(
         self,
     ):
+        self.__ps = None
         self.__cps = ConfigPictureSorter()
         self.__cps.load()
         self.__path_in = ""
@@ -275,23 +276,34 @@ class Application(object):
         self.__cps.modify_path_out(path_out)
         self.__cps.save()
 
+    def __print_load_image(self):
+        current_data = self.__ps.get_current_image()
+        max_data = self.__ps.get_max_image()
+        percentage = (current_data / max_data) * 100
+        bar = "#" * int(percentage)
+        sys.stdout.write("\rProgression: [{:<100}] {:.1f}%".format(bar, percentage))
+        sys.stdout.flush()
+
     def sort(self):
-        ps = Picture_sorter(self.__path_in, self.__path_out)
+        self.__ps = Picture_sorter(self.__path_in, self.__path_out)
 
         ls_coef = self.__cps.get_all_coefficient()
         for name_coef in ls_coef:
-            ps.add_coef(
+            self.__ps.add_coef(
                 name_coef,
                 ls_coef[name_coef]["min_coef"],
                 ls_coef[name_coef]["max_coef"],
             )
         del ls_coef
 
-        ps.enabled_copie_mode(self.__copy)
-        ps.search_images()
-        ps.generate__list_sort_image()
-        ps.resolve()
-        ps.apply_resolve()
+        self.__ps.enabled_copie_mode(self.__copy)
+        self.__ps.set_event_progrres_move(self.__print_load_image)
+        self.__ps.search_images()
+        self.__ps.generate__list_sort_image()
+        self.__ps.resolve()
+        print("Detected image : {}".format(self.__ps.get_max_image()))
+        self.__ps.apply_resolve()
+        del self.__ps
 
 
 def main():

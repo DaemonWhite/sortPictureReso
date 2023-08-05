@@ -29,6 +29,11 @@ class Picture_sorter(Size_image_storage):
         self.__picture_in = self.DEFAULT_PICTURE_OUT
         self.__picture_out = self.DEFAULT_PICTURE_OUT
 
+        self.__current_image = 0
+        self.__max_detected_image = 0
+
+        self.__event_move_image = None
+
         self.__files_images = list()
 
         self.set_picture_in_path(picture_in)
@@ -43,6 +48,12 @@ class Picture_sorter(Size_image_storage):
     def get_search_images(self):
         return self.__files_images.copy()
 
+    def get_current_image(self):
+        return self.__current_image
+
+    def get_max_image(self):
+        return self.__max_detected_image
+
     def reset_search_images(self):
         self.__files_images = list()
 
@@ -51,6 +62,9 @@ class Picture_sorter(Size_image_storage):
             self.default_in_picture()
         else:
             self.__picture_in = str(path)
+
+    def set_event_progrres_move(self, callback):
+        self.__event_move_image = callback
 
     def set_picture_out_path(self, path: str):
         if path == "":
@@ -122,6 +136,7 @@ class Picture_sorter(Size_image_storage):
         for file in files:
             if os.path.splitext(file)[1].lower() in self.__IMAGE_EXTENTION:
                 self.__files_images.append(file)
+                self.__max_detected_image += 1
 
     def generate__list_sort_image(self):
         for name_coef in self.get_name_coef():
@@ -134,7 +149,6 @@ class Picture_sorter(Size_image_storage):
         for image in self.__files_images:
             path_image = self.__picture_in + "/" + image
             coef = int(-1)
-
             try:
                 with Image.open(path_image) as im:
                     xsize, ysize = im.size
@@ -154,15 +168,17 @@ class Picture_sorter(Size_image_storage):
 
     def apply_resolve(self):
         path_out = str
-
+        self.__event_move_image()
         for name_dict in self.__sort_images:
             path_out = os.path.join(self.__picture_out, name_dict)
             self.verif_output(path_out)
             for image in self.__sort_images[name_dict]:
+                self.__current_image += 1
                 self.__move_image(
                     src=os.path.join(self.__picture_in, image),
                     dst=os.path.join(path_out, image),
                 )
+                self.__event_move_image()
 
 
 if __name__ == "__main__":
