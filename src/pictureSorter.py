@@ -222,7 +222,7 @@ class Application(object):
         self.ls_coef()
 
     def version(self):
-        print("Version : 0.0.4")
+        print("Version : 0.0.5")
         print("Script By DaemonWhite")
         print("Script use XDG user")
 
@@ -283,6 +283,7 @@ class Application(object):
         sys.stdout.flush()
 
     def sort(self):
+        print(self.__verbose)
         self.__ps = Picture_sorter(self.__path_in, self.__path_out, self.__verbose)
 
         ls_coef = self.__cps.get_all_coefficient()
@@ -324,7 +325,7 @@ def main():
     ac.add_arguemnt("default", "d", "Default value of this app", app.reset)
     ac.add_arguemnt("list-configuration", "l", "Print configuration", app.ls_conf)
     ac.add_arguemnt("version", "v", "Version system", app.version)
-    ac.add_arguemnt("verbose", "ve", "Mode verbose enable", app.enable_verbose())
+    ac.add_arguemnt("verbose", "ve", "Mode verbose enable", app.enable_verbose)
     ac.add_arguemnt("help", "h", "List all command", app.enable_help)
     ac.run()
     app.run()
