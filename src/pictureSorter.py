@@ -4,13 +4,6 @@ import os
 
 from LibPictureSorter import Picture_sorter, ConfigPictureSorter, Size_image_storage
 
-
-# TODO Ajout de la configuration non implémentée
-# - Ajout coefficient
-# - Suprimer coeffiient
-# - Changer les chemins par défault
-# - Ajouter le meson
-
 class ArguemntControl(object):
     def __init__(self):
         self.__dict_argument = dict()
@@ -302,7 +295,10 @@ class Application(object):
         self.__ps.generate__list_sort_image()
         self.__ps.resolve()
         print("Detected image : {}".format(self.__ps.get_max_image()))
-        self.__ps.apply_resolve()
+        if self.__ps.get_max_image() > 0:
+            self.__ps.apply_resolve()
+        else:
+            print('No detected Image')
         del self.__ps
 
 
