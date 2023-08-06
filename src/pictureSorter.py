@@ -78,6 +78,8 @@ class Application(object):
         self.__call_add_coef = False
         self.__call_remove_coef = False
 
+        self.__verbose=False
+
         if self.__cps.get_default():
             self.reset()
 
@@ -118,6 +120,9 @@ class Application(object):
 
     def enable_help(self):
         self.__call_help = True
+
+    def enable_verbose(self):
+        self.__verbose = True
 
     def add_coef(self):
         yes = "n"
@@ -278,7 +283,7 @@ class Application(object):
         sys.stdout.flush()
 
     def sort(self):
-        self.__ps = Picture_sorter(self.__path_in, self.__path_out)
+        self.__ps = Picture_sorter(self.__path_in, self.__path_out, self.__verbose)
 
         ls_coef = self.__cps.get_all_coefficient()
         for name_coef in ls_coef:
@@ -319,6 +324,7 @@ def main():
     ac.add_arguemnt("default", "d", "Default value of this app", app.reset)
     ac.add_arguemnt("list-configuration", "l", "Print configuration", app.ls_conf)
     ac.add_arguemnt("version", "v", "Version system", app.version)
+    ac.add_arguemnt("verbose", "ve", "Mode verbose enable", app.enable_verbose())
     ac.add_arguemnt("help", "h", "List all command", app.enable_help)
     ac.run()
     app.run()

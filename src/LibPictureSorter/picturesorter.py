@@ -7,11 +7,6 @@ from PIL import Image
 
 from .sizeimagestorage import Size_image_storage
 
-# TODO Ajout du nombre d'image à d'éplacer
-# Get de recuperation du nombre d'image courante
-# Variaible du comptage d'image
-# Variable du nombre max d'image
-
 # TODO Recurssif mode
 # Ajout d'une varialble
 # Ajout d'une méthode
@@ -22,7 +17,12 @@ class Picture_sorter(Size_image_storage):
     DEFAULT_PICTURE_OUT = "./"
     __IMAGE_EXTENTION = [".jpg", ".jpeg", ".png", ".gif"]
 
-    def __init__(self, picture_in="", picutre_out=""):
+    def __init__(self, picture_in="", picutre_out="", verbose=False):
+
+        if not verbose:
+            self.log_info = self.log_pass
+            self.log_warning = self.log_pass
+            self.log_error = self.log_pass
 
         self.__sort_images = {"Other": []}
 
@@ -60,6 +60,7 @@ class Picture_sorter(Size_image_storage):
     def set_picture_in_path(self, path: str):
         if path == "":
             self.default_in_picture()
+            self.log_info("", "Default in path defined")
         else:
             self.__picture_in = str(path)
 
@@ -69,12 +70,24 @@ class Picture_sorter(Size_image_storage):
     def set_picture_out_path(self, path: str):
         if path == "":
             self.default_out_picture()
+            self.log_info("", "Default out path defined")
         else:
             self.__picture_out = path
 
+    def log_info(self, name, description):
+        print(f"[INFO] : {name} {description}")
+
+    def log_warning(self, name, description):
+        print(f"[WARNING] : {name} {description}")
+
+    def log_error(self, name, description):
+        print(f"[ERROR] : {name} {description}")
+
+    def log_pass(self, name, description):
+        pass
+
     def default_in_picture(self):
         path_picture = self.xdg_picture_path()
-
         self.__picture_in = path_picture
 
     def default_out_picture(self):
@@ -94,10 +107,14 @@ class Picture_sorter(Size_image_storage):
         path_picture = self.DEFAULT_PICTURE_OUT
         system = platform.system()
 
+        self.log_info("OS : ", system)
+
         if system == "Windows":
             path_picture = self.xdg_picture_path_windows()
         elif system == "Linux":
             path_picture = self.xdg_picture_path_linux()
+
+        self.log_info("DEFAULT PATH DETECTED", path_picture)
 
         return path_picture
 
@@ -133,14 +150,18 @@ class Picture_sorter(Size_image_storage):
 
     def search_images(self):
         files = os.listdir(self.__picture_in)
+        self.log_info("DETECTED Files", len(files))
         for file in files:
             if os.path.splitext(file)[1].lower() in self.__IMAGE_EXTENTION:
                 self.__files_images.append(file)
                 self.__max_detected_image += 1
+                self.log_info(f"Image Detectede {self.__max_detected_image} : ", file)
+        self.log_info("DETECTED Image", self.__max_detected_image)
 
     def generate__list_sort_image(self):
         for name_coef in self.get_name_coef():
             self.__sort_images[name_coef] = []
+            self.log_info("NAME COEF : ", name_coef)
 
     def __move_image(self):
         pass
@@ -155,7 +176,7 @@ class Picture_sorter(Size_image_storage):
                     coef = self.calculate_coef(xsize, ysize)
             except OSError:
 
-                print("Erreur : Impossible de récupérer l'image : {path_image}")
+                self.log_error("Impossible",f"de récupérer l'image : {path_image}")
 
             if coef > -1:
                 self.__sort_images[self.sort_coef(coef)].append(image)
@@ -164,19 +185,25 @@ class Picture_sorter(Size_image_storage):
         exist_folder = os.path.isdir(verif_path)
 
         if not exist_folder:
+            self.log_warning(f"Path not exist : {verif_path}", "\nPath auto generate")
             os.makedirs(verif_path)
 
     def apply_resolve(self):
-        path_out = str
+        path_out = str()
         self.__event_move_image()
+        src = str()
+        dst = str()
         for name_dict in self.__sort_images:
             path_out = os.path.join(self.__picture_out, name_dict)
             self.verif_output(path_out)
             for image in self.__sort_images[name_dict]:
+                src = os.path.join(self.__picture_in, image)
+                dst = os.path.join(path_out, image)
+                self.log_info("MOVE", f"{name_dict}\n\tstr :{src}\n\tdest{dst}")
                 self.__current_image += 1
                 self.__move_image(
-                    src=os.path.join(self.__picture_in, image),
-                    dst=os.path.join(path_out, image),
+                    src=src,
+                    dst=dst,
                 )
                 self.__event_move_image()
 
