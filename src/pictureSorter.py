@@ -283,7 +283,6 @@ class Application(object):
         sys.stdout.flush()
 
     def sort(self):
-        print(self.__verbose)
         self.__ps = Picture_sorter(self.__path_in, self.__path_out, self.__verbose)
 
         ls_coef = self.__cps.get_all_coefficient()
