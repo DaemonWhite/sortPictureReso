@@ -15,6 +15,13 @@ if not py_installation.found()
     error('No valid python3 binary found')
 endif
 
+test_1 = find_program('test_size_image_storage', 'tests/test_size_image_storage.py')
+
+test(
+  'mon_projet_tests',   # Nom de la cible de test
+  test_1
+)
+
 subdir('src')
 
 install_data(source_module)
