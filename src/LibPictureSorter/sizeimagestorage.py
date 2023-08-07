@@ -5,7 +5,7 @@ class Size_image_storage(object):
         return self._coefficient[name_coef]
 
     def get_dict_coeff(self):
-        return self._coefficient.copie()
+        return self._coefficient.copy()
 
     def get_name_coef(self):
         return self._coefficient.keys()
