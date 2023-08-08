@@ -328,8 +328,3 @@ def main():
     ac.add_arguemnt("help", "h", "List all command", app.enable_help)
     ac.run()
     app.run()
-
-
-if __name__ == "__main__":
-    main()
-

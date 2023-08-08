@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "sortpicturereso"
+version = "0.0.5"
+description = "Sorts images by format"
+authors = ["DaemonWhite <matheo.daemon@gmail.com>"]
+readme = "README.md"
+packages = [{include = "sortpicturereso"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pyxdg = "^0.28"
+Pillow = "^10.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
