@@ -1,6 +1,6 @@
 #!/bin/python3
 import unittest
-from LibPictureSorter import Size_image_storage
+from sortpicturereso.LibPictureSorter import Size_image_storage
 
 class TestSizeImageStorage(unittest.TestCase):
 
@@ -30,13 +30,12 @@ class TestSizeImageStorage(unittest.TestCase):
         self.assertAlmostEqual(self.sis.calculate_coef(1920, 1080), 1.777777, places=5)
 
     def test_sort_coef(self):
-        # Vérifier si la fonction de tri des coefficients fonctionne correctement
-        print(self.sis.get_dict_coeff())
+        # Vérifier si la fonction de tri des coefficients fonctionne correctement*
         self.assertEqual(self.sis.sort_coef(1.5), "pc-statdart")
         self.assertEqual(self.sis.sort_coef(0.5), "mobile")
         self.assertNotEqual(self.sis.sort_coef(2.1), "test-coef")  # Le test-coef doit être ajouté avant
         self.assertEqual(self.sis.sort_coef(3), "Other")
-        self.assertEqual(self.sis.sort_coef(0), "mobile")
+        self.assertEqual(self.sis.sort_coef(0), "mobile", 'Test Mobile')
 
 if __name__ == '__main__':
     unittest.main()

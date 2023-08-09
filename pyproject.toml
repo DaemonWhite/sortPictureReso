@@ -5,13 +5,19 @@ description = "Sorts images by format"
 authors = ["DaemonWhite <matheo.daemon@gmail.com>"]
 readme = "README.md"
 packages = [{include = "sortpicturereso"}]
+documentation = "https://github.com/DaemonWhite/sortPictureReso"
 
 [tool.poetry.dependencies]
 python = "^3.11"
 pyxdg = "^0.28"
 Pillow = "^10.0.0"
 
+[tool.poetry.dev-dependencies]
+pytest = "^6.2"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poe.executor]
+type = "virtualenv"
