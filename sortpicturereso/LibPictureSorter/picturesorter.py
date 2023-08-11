@@ -34,6 +34,7 @@ class Picture_sorter(Size_image_storage):
         self.__max_detected_image = 0
 
         self.__event_move_image = None
+        self.__event_end_image = None
 
         self.set_picture_in_path(picture_in)
         self.set_picture_out_path(picutre_out)
@@ -71,6 +72,9 @@ class Picture_sorter(Size_image_storage):
 
     def set_event_progrres_move(self, callback):
         self.__event_move_image = callback
+
+    def set_event_end_move(self, callback):
+        self.__event_end_image = callback)
 
     def set_picture_out_path(self, path: str):
         if path == "":
@@ -217,6 +221,7 @@ class Picture_sorter(Size_image_storage):
                     dst=dst,
                 )
                 self.__event_move_image()
+        self.__event_end_image()
 
 
 if __name__ == "__main__":
