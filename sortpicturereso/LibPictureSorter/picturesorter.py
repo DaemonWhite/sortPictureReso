@@ -70,11 +70,11 @@ class Picture_sorter(Size_image_storage):
         else:
             self.__picture_in = str(path)
 
-    def set_event_progrres_move(self, callback):
+    def set_event_progress_move(self, callback):
         self.__event_move_image = callback
 
     def set_event_end_move(self, callback):
-        self.__event_end_image = callback)
+        self.__event_end_image = callback
 
     def set_picture_out_path(self, path: str):
         if path == "":

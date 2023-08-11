@@ -295,7 +295,7 @@ class Application(object):
         del ls_coef
 
         self.__ps.enabled_copie_mode(self.__copy)
-        self.__ps.set_event_progrres_move(self.__print_load_image)
+        self.__ps.set_event_progress_move(self.__print_load_image)
         self.__ps.search_images()
         self.__ps.generate__list_sort_image()
         self.__ps.resolve()
