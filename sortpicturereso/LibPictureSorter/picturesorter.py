@@ -47,8 +47,11 @@ class Picture_sorter(Size_image_storage):
     def get_list_images(self):
         return self.__files_images.copy()
 
-    def get_resolve_image(self)
+    def get_resolve_image(self):
         return self.__sort_images.copy()
+
+    def get_list_extention(self):
+        return self.__IMAGE_EXTENTION.copy()
 
     def get_current_image(self):
         return self.__current_image
@@ -75,6 +78,12 @@ class Picture_sorter(Size_image_storage):
             self.log_info("", "Default out path defined")
         else:
             self.__picture_out = path
+
+    def add_extention(self, extention):
+        self.__IMAGE_EXTENTION.append(extention)
+
+    def remove_extention(self, extention):
+        self.__IMAGE_EXTENTION.remove(extention)
 
     def log_info(self, name, description):
         print(f"[INFO] : {name} {description}")
