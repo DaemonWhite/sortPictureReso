@@ -24,6 +24,7 @@ class Picture_sorter(Size_image_storage):
             self.log_warning = self.log_pass
             self.log_error = self.log_pass
 
+        self.__files_images = list()
         self.__sort_images = {"Other": []}
 
         self.__picture_in = self.DEFAULT_PICTURE_OUT
@@ -34,8 +35,6 @@ class Picture_sorter(Size_image_storage):
 
         self.__event_move_image = None
 
-        self.__files_images = list()
-
         self.set_picture_in_path(picture_in)
         self.set_picture_out_path(picutre_out)
 
@@ -45,8 +44,11 @@ class Picture_sorter(Size_image_storage):
     def get_picture_out_path(self):
         return self.__picture_out
 
-    def get_search_images(self):
+    def get_list_images(self):
         return self.__files_images.copy()
+
+    def get_resolve_image(self)
+        return self.__sort_images.copy()
 
     def get_current_image(self):
         return self.__current_image
