@@ -13,7 +13,7 @@ pyxdg = "^0.28"
 Pillow = "^10.0.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2"
+pytest = "^7.4"
 
 [build-system]
 requires = ["poetry-core"]
