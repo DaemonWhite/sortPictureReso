@@ -121,6 +121,12 @@ class Picture_sorter(Size_image_storage):
         else:
             self.__move_image = shutil.move
 
+    def enabled_recursif_mode(self, enabled_recursif=True):
+        if enabled_recursif:
+            self.search_images = self.search_images_recursif
+        else:
+            self.search_images = self.search_images_no_recursif
+
     def xdg_picture_path(self) -> str:
         path_picture = self.DEFAULT_PICTURE_OUT
         system = platform.system()
@@ -166,15 +172,34 @@ class Picture_sorter(Size_image_storage):
         )
         return user_path
 
-    def search_images(self):
-        files = os.listdir(self.__picture_in)
-        self.log_info("DETECTED Files", len(files))
+#TODO Ajouter les dossier à ignorer
+
+
+    def search_images_recursif(self):
+        path = str()
+        len_picture_in = len(self.__picture_in) + 1
+        for root, dirs, files in os.walk(self.__picture_in, followlinks=True):
+            index = int(0)
+            for file in files:
+                files[index] = os.path.join(root[len_picture_in:], file)
+                index += 1
+            self.__add_search_images(files)
+
+    def __add_search_images(self, files=""):
         for file in files:
             if os.path.splitext(file)[1].lower() in self.__IMAGE_EXTENTION:
                 self.__files_images.append(file)
                 self.__max_detected_image += 1
                 self.log_info(f"Image Detectede {self.__max_detected_image} : ", file)
+
+    def search_images_no_recursif(self):
+        files = os.listdir(self.__picture_in)
+        self.log_info("DETECTED Files", len(files))
+        self.__add_search_images(files)
         self.log_info("DETECTED Image", self.__max_detected_image)
+
+    def search_images(self):
+        pass
 
     def generate__list_sort_image(self):
         for name_coef in self.get_name_coef():
@@ -184,9 +209,12 @@ class Picture_sorter(Size_image_storage):
     def __move_image(self):
         pass
 
+# TODO Ajouter le nombre d'image résolue
+
     def resolve(self):
+        path_image = str()
         for image in self.__files_images:
-            path_image = self.__picture_in + "/" + image
+            path_image = os.path.join(self.__picture_in, image)
             coef = int(-1)
             try:
                 with Image.open(path_image) as im:
@@ -216,7 +244,7 @@ class Picture_sorter(Size_image_storage):
             self.verif_output(path_out)
             for image in self.__sort_images[name_dict]:
                 src = os.path.join(self.__picture_in, image)
-                dst = os.path.join(path_out, image)
+                dst = os.path.join(path_out, os.path.split(image)[1])
                 self.log_info("MOVE", f"{name_dict}\n\tstr :{src}\n\tdest{dst}")
                 self.__current_image += 1
                 self.__move_image(
@@ -236,5 +264,6 @@ if __name__ == "__main__":
     ps.generate__list_sort_image()
     ps.resolve()
     ps.apply_resolve()
+
 
 

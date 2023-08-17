@@ -88,6 +88,7 @@ class Application(object):
 
         argument = sys.argv.copy()
         self.__copy = False
+        self.__recursif = False
 
     def set__callback_help(self, method):
         self.__callback_help = method
@@ -108,6 +109,9 @@ class Application(object):
 
     def ennabled_copy(self, enable=True):
         self.__copy = enable
+
+    def enabled_recursif(self, enable=True):
+        self.__recursif = enable
 
     def enable_add_coef(self):
         self.__call_add_coef = True
@@ -295,11 +299,14 @@ class Application(object):
         del ls_coef
 
         self.__ps.enabled_copie_mode(self.__copy)
+        self.__ps.enabled_recursif_mode(self.__recursif)
         self.__ps.set_event_progress_move(self.__print_load_image)
         self.__ps.search_images()
         self.__ps.generate__list_sort_image()
         self.__ps.resolve()
+
         print("Detected image : {}".format(self.__ps.get_max_image()))
+
         if self.__ps.get_max_image() > 0:
             self.__ps.apply_resolve()
         else:
@@ -317,6 +324,7 @@ def main():
     )
     ac.add_arguemnt("path_in", "i", "Paht for the search picture", app.set_path_in, 1)
     ac.add_arguemnt("path_out", "o", "Paht for the out picture", app.set_path_out, 1)
+    ac.add_arguemnt("recursif", "r", "Enable search sub-folder", app.enabled_recursif)
     ac.add_arguemnt(
         "remove-ceofficien", "rc", "remove coefficient", app.enable_remove_coef
     )
