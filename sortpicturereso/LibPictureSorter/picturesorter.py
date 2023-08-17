@@ -33,9 +33,6 @@ class Picture_sorter(Size_image_storage):
         self.__current_image = 0
         self.__max_detected_image = 0
 
-        self.__event_move_image = None
-        self.__event_end_image = None
-
         self.set_picture_in_path(picture_in)
         self.set_picture_out_path(picutre_out)
 
@@ -99,6 +96,12 @@ class Picture_sorter(Size_image_storage):
         print(f"[ERROR] : {name} {description}")
 
     def log_pass(self, name, description):
+        pass
+
+    def __event_move_image(self):
+        pass
+
+    def __event_end_image(self):
         pass
 
     def default_in_picture(self):
@@ -233,4 +236,5 @@ if __name__ == "__main__":
     ps.generate__list_sort_image()
     ps.resolve()
     ps.apply_resolve()
+
 
