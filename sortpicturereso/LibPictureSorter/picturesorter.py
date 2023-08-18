@@ -17,7 +17,13 @@ class Picture_sorter(Size_image_storage):
     DEFAULT_PICTURE_OUT = "./"
     __IMAGE_EXTENTION = [".jpg", ".jpeg", ".png", ".gif"]
 
-    def __init__(self, picture_in="", picutre_out="", verbose=False):
+    def __init__(self,
+        picture_in="",
+        picutre_out="",
+        verbose=False,
+        recursif=False,
+        copy=True
+    ):
 
         if not verbose:
             self.log_info = self.log_pass
@@ -32,6 +38,9 @@ class Picture_sorter(Size_image_storage):
 
         self.__current_image = 0
         self.__max_detected_image = 0
+
+        self.enabled_copie_mode(False)
+        self.enabled_recursif_mode(False)
 
         self.set_picture_in_path(picture_in)
         self.set_picture_out_path(picutre_out)
