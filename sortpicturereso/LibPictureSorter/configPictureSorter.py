@@ -9,6 +9,7 @@ import xdg.BaseDirectory
 
 
 class ConfigPictureSorter(object):
+    """ Save and load ConfigPictureSorter"""
     def __init__(self, name="PictureSorter"):
         self.__json_data = {
             "default": True,
@@ -29,6 +30,7 @@ class ConfigPictureSorter(object):
             self.save()
 
     def __get_xdg_path(self):
+        """ Load default config path by os"""
         path_conf_user = "./"
         system = platform.system()
 
@@ -51,6 +53,7 @@ class ConfigPictureSorter(object):
         self.__json_data["path_out"] = path
 
     def __calc_ceof(self, w, h) -> float:
+        """Calculate the coefficient  Width / Heigth = Coef """
         calc = 0
         if h != 0:
             calc = w / h
@@ -65,6 +68,7 @@ class ConfigPictureSorter(object):
             max_width: int,
             max_height: int,
         ):
+        """ Add coefficient in config """
         self.__json_data["coefficient"][name] = {
             "min_width": min_width,
             "min_height": min_height,
@@ -75,52 +79,52 @@ class ConfigPictureSorter(object):
         }
 
     def enabled_copy_mode(self, copy=True):
+        """ Enable/Diable copy mode settings """
         self.__json_data["copy"] = copy
 
     def disable_default(self, default=False):
+        """Disable default settings for the prevent is not default"""
         self.__json_data["default"] = default
 
     def remove_coefficient(self, name):
+        """Remove coefficient in configuration"""
         del self.__json_data["coefficient"][name]
 
     def get_copy(self):
+        """Get state copy in conf """
         return self.__json_data["copy"]
 
     def get_default(self):
+        """Get default in conf """
         return self.__json_data["default"]
 
     def get_coefficent(self, name):
+        """get_coefficient by name"""
         W = self.__json_data["coefficient"][name]["width"]
         H = self.__json_data["coefficient"][name]["height"]
         C = self.__json_data["coefficient"][name]["coef"]
         return W, H, C
 
     def get_all_coefficient(self):
+        """"get all coefficient in config"""
         return self.__json_data["coefficient"].copy()
 
     def get_path_in(self):
+        """get path for get images"""
         return self.__json_data["path_in"]
 
     def get_path_out(self):
+        """get path for save images"""
         return self.__json_data["path_out"]
 
     def save(self):
+        """Save configuration in json file"""
         path = os.path.join(self.__folder_file, self.__name_file)
         with open(path, "w") as json_file:
             json.dump(self.__json_data, json_file)
 
     def load(self):
+        """ load configuration in file """
         path = os.path.join(self.__folder_file, self.__name_file)
         with open(path, "r") as json_file:
             self.__json_data = json.load(json_file)
-
-
-if __name__ == "__main__":
-    cps = ConfigPictureSorter()
-    cps.load()
-    print(cps.get_coefficent("pc-main"))
-    cps.add_coefficient("pc-main", 1080, 1920, 1920, 1080)
-    cps.add_coefficient("phone-main", 1080, 1920, 1080, 2050)
-    cps.save()
-    print(cps.get_all_coefficient())
-

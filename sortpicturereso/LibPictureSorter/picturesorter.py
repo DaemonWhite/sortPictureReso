@@ -33,14 +33,16 @@ class Picture_sorter(Size_image_storage):
         self.__files_images = list()
         self.__sort_images = {"Other": []}
 
-        self.__picture_in = self.DEFAULT_PICTURE_OUT
-        self.__picture_out = self.DEFAULT_PICTURE_OUT
-
         self.__current_image = 0
         self.__max_detected_image = 0
 
-        self.enabled_copie_mode(False)
-        self.enabled_recursif_mode(False)
+        self.__ignore_path = list()
+
+        self.__recursif = False
+        self.__copy = False
+
+        self.enabled_copie_mode(copy)
+        self.enabled_recursif_mode(recursif)
 
         self.set_picture_in_path(picture_in)
         self.set_picture_out_path(picutre_out)
@@ -66,6 +68,12 @@ class Picture_sorter(Size_image_storage):
     def get_max_image(self):
         return self.__max_detected_image
 
+    def get_copy(self):
+        return self.__copy
+
+    def get_recursif(self):
+        return self.__recursif
+
     def reset_search_images(self):
         self.__files_images = list()
 
@@ -88,6 +96,12 @@ class Picture_sorter(Size_image_storage):
             self.log_info("", "Default out path defined")
         else:
             self.__picture_out = path
+
+        if self.__recursif:
+            self.default_ignore_path()
+
+    def add_ignore_path(self, path):
+        self.__ignore_path.append(path)
 
     def add_extention(self, extention):
         self.__IMAGE_EXTENTION.append(extention)
@@ -124,17 +138,26 @@ class Picture_sorter(Size_image_storage):
 
         self.__picture_out = path_picture
 
+    def default_ignore_path(self):
+        self.add_ignore_path(os.path.split(self.__picture_out)[1])
+        self.add_ignore_path((self.__picture_out+"/"))
+
     def enabled_copie_mode(self, enabled_copie=True):
+        self.__copy = enabled_copie
         if enabled_copie:
             self.__move_image = shutil.copy
         else:
             self.__move_image = shutil.move
 
     def enabled_recursif_mode(self, enabled_recursif=True):
+        self.__recursif = enabled_recursif
         if enabled_recursif:
             self.search_images = self.search_images_recursif
         else:
             self.search_images = self.search_images_no_recursif
+
+        if self.__recursif:
+            self.default_ignore_path()
 
     def xdg_picture_path(self) -> str:
         path_picture = self.DEFAULT_PICTURE_OUT
@@ -181,8 +204,20 @@ class Picture_sorter(Size_image_storage):
         )
         return user_path
 
-#TODO Ajouter les dossier à ignorer
-
+    def __apply_ignore_file(self, files):
+        print("ignore path : ", self.__ignore_path)
+        index_delete = list()
+        index = 0
+        offset = 0
+        for file in files:
+            for ignore in self.__ignore_path:
+                file_index = file.find(ignore)
+                if -1 < file_index:
+                    index_delete.append(index)
+            index+=1
+        for i in index_delete:
+            files.pop(i-offset)
+            offset += 1
 
     def search_images_recursif(self):
         path = str()
@@ -192,6 +227,7 @@ class Picture_sorter(Size_image_storage):
             for file in files:
                 files[index] = os.path.join(root[len_picture_in:], file)
                 index += 1
+            self.__apply_ignore_file(files)
             self.__add_search_images(files)
 
     def __add_search_images(self, files=""):
