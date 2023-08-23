@@ -14,6 +14,7 @@ class ConfigPictureSorter(object):
         self.__json_data = {
             "default": True,
             "copy": False,
+            "recursif": False,
             "path_in": "./",
             "path_out": "./out",
             "coefficient": {},
@@ -82,6 +83,9 @@ class ConfigPictureSorter(object):
         """ Enable/Diable copy mode settings """
         self.__json_data["copy"] = copy
 
+    def enabled_recursif_mode[self, recursif=True]:
+        self.__json_data["recursif"] = recursif
+
     def disable_default(self, default=False):
         """Disable default settings for the prevent is not default"""
         self.__json_data["default"] = default
@@ -97,6 +101,9 @@ class ConfigPictureSorter(object):
     def get_default(self):
         """Get default in conf """
         return self.__json_data["default"]
+
+    def get_resolve(self):
+        return self.__json_data["recursif"]
 
     def get_coefficent(self, name):
         """get_coefficient by name"""
