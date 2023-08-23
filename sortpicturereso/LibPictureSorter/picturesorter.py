@@ -205,7 +205,6 @@ class Picture_sorter(Size_image_storage):
         return user_path
 
     def __apply_ignore_file(self, files):
-        print("ignore path : ", self.__ignore_path)
         index_delete = list()
         index = 0
         offset = 0
