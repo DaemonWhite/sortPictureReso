@@ -222,6 +222,7 @@ class Application(object):
         print("Path output : {}".format(self.__cps.get_path_out()))
         print("\n-- CONFIGUATION --")
         print("copy : {}".format(self.__cps.get_copy()))
+        print("recursif: {}".format(self.__cps.get_recursif()))
         print("\n-- COEF --")
         self.ls_coef()
 
@@ -258,7 +259,7 @@ class Application(object):
         print("Current path in : {}".format(self.__cps.get_path_in()))
         print("Current path out : {}".format(self.__cps.get_path_out()))
         while not good_path:
-            path_in = input("Chemin pout chercher les images: ")
+            path_in = input("Chemin pour chercher les images: ")
             good_path = os.path.isdir(path_in)
 
             if path_in == "":

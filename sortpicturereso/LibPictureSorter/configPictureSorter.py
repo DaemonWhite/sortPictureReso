@@ -83,7 +83,7 @@ class ConfigPictureSorter(object):
         """ Enable/Diable copy mode settings """
         self.__json_data["copy"] = copy
 
-    def enabled_recursif_mode[self, recursif=True]:
+    def enabled_recursif_mode(self, recursif=True):
         self.__json_data["recursif"] = recursif
 
     def disable_default(self, default=False):
@@ -97,6 +97,10 @@ class ConfigPictureSorter(object):
     def get_copy(self):
         """Get state copy in conf """
         return self.__json_data["copy"]
+
+    def get_recursif(self):
+        """Get state recursif in conf """
+        return self.__json_data["recursif"]
 
     def get_default(self):
         """Get default in conf """
