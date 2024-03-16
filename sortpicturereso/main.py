@@ -69,8 +69,6 @@ class Application(object):
         self.__ps = None
         self.__cps = ConfigPictureSorter()
         self.__cps.load()
-        self.__path_in = ""
-        self.__path_out = ""
 
         self.__call_sort = True
         self.__call_help = False
@@ -80,15 +78,17 @@ class Application(object):
 
         self.__verbose=False
 
+        # Reset configuration
         if self.__cps.get_default():
             self.reset()
 
-        path_in = self.__cps.get_path_in()
-        path_out = self.__cps.get_path_out()
-
         argument = sys.argv.copy()
-        self.__copy = False
-        self.__recursif = False
+
+        # Load Configuration
+        self.__path_in = self.__cps.get_path_in()
+        self.__path_out = self.__cps.get_path_out()
+        self.__copy = self.__cps.get_copy()
+        self.__recursif = self.__cps.get_recursif()
 
     def set__callback_help(self, method):
         self.__callback_help = method
