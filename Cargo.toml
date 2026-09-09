@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "core_picture_sorter",
+    "cli",
+]
+
+resolver = "3"

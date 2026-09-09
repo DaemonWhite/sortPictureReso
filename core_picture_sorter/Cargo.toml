@@ -1,0 +1,8 @@
+[package]
+name = "core_picture_sorter"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "core_picture_sorter"
+path = "src/lib.rs"
