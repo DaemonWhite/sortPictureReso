@@ -16,6 +16,37 @@
 
 pub mod coefstorage;
 
+use std::fs;
+use std::path::PathBuf;
+use image::guess_format;
+
+
+pub fn search_image(path: PathBuf, recursif: bool) -> Vec<PathBuf>  {
+    let mut picture_paths: Vec<PathBuf> = Vec::new();
+
+    for entry in path.read_dir().expect("Read dir picture is fail") {
+        if let Ok(entry) = entry {
+            if entry.path().is_file() {
+                // Load picture
+                let buffer = fs::read(entry.path()).ok();
+                if let Some(buffer) = buffer {
+                    // Verify mime type
+                    if let Ok(_) = guess_format(&buffer) {
+                        picture_paths.push(entry.path());
+                    }
+                }
+
+            } else if recursif && entry.path().is_dir()  {
+                picture_paths.append(
+                    &mut search_image(entry.path(), recursif)
+                );
+            }
+
+        }
+    }
+
+    picture_paths
+}
 
 pub fn calculate_distance(x1: f64, y1: f64, x2: f64, y2: f64) -> f64 {
     // Formule de distance: sqrt((x2-x1)^2 + (y2-y1)^2)
