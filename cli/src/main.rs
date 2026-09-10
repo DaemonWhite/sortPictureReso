@@ -1,33 +1,50 @@
 // On importe tous les éléments publics (fonctions, structs) du crate core_logic.
 // La syntaxe 'use crate_name::item' est standard pour l'importation.
-use core_picture_sorter::{calculate_distance, Point, coefstorage::CoefStorage};
+use core_picture_sorter::search_image;
+use std::path::PathBuf;
+
+use clap::{Parser, Subcommand};
+
+#[derive(Parser)]
+#[command(author, version, about = "Outil de tri d'images en CLI", long_about = None)]
+pub struct Cli {
+    /// Dossier contenant les images à trier
+    #[arg(short, long, value_name = "DOSSIER")]
+    pub input: PathBuf,
+
+    /// Exécution à blanc sans déplacer de fichiers
+    #[arg(short, long, default_value_t = false)]
+    pub dry_run: bool,
+
+    #[arg(short, long, default_value_t = false)]
+    pub recursif: bool,
+
+    #[command(subcommand)]
+    pub command: Option<Commands>,
+}
+
+#[derive(Subcommand)]
+pub enum Commands {
+    /// Trier par date EXIF
+    ByDate {
+        #[arg(short, long, default_value = "%Y/%m")]
+        format: String,
+    },
+    /// Trier par résolution ou ratio
+    ByResolution,
+}
 
 fn main() {
+    let cli = Cli::parse();
+
+    let images_path: PathBuf = PathBuf::from(cli.input);
+
+    let result = search_image(images_path, cli.recursif);
+
     println!("=============================================");
-    println!("🚀 Démarrage de l'application utilisant le workspace.");
+    println!("🚀 Recherche d'image en cours...");
     println!("=============================================");
 
-    // 1. Utiliser la fonction pour créer des points
-    let p1 = Point::new(10.0, 5.0);
-    let p2 = Point::new(20.0, 15.0);
-
-    println!("Point 1 créé : {:?}", p1);
-    println!("Point 2 créé : {:?}", p2);
-
-    // 2. Utiliser la fonction publique pour calculer la distance
-    // Nous passons les coordonnées des structures que nous venons de créer.
-    let distance = calculate_distance(
-        p1.x, p1.y,
-        p2.x, p2.y
-    );
-
-    // 3. Affichage du résultat
-    println!("\n--- Résultats ---");
-    println!("La distance entre les deux points est : {:.2}", distance);
-
-    // Exemple de démonstration : si le résultat est grand, c'est loin !
-    if distance > 15.0 {
-        println!("Conclusion : Ces points sont assez éloignés dans l'espace!");
-    }
+    println!("{:?}", result);
 }
 
