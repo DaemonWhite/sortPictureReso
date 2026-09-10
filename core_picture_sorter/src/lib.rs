@@ -3,7 +3,8 @@ pub mod coefstorage;
 use std::io::Read;
 use std::fs::{self, File};
 use std::path::PathBuf;
-use image::guess_format;
+use image::{guess_format, image_dimensions};
+use std::collections::HashMap;
 
 pub fn search_image(path: PathBuf, recursif: bool) -> Vec<PathBuf> {
     let mut picture_paths = Vec::new();
@@ -42,4 +43,31 @@ fn is_image(path: &PathBuf) -> bool {
     }
 
     guess_format(&buffer).is_ok()
+}
+
+pub fn sort_image(images: &[PathBuf], storage: coefstorage::CoefStorage) -> HashMap<String, Vec<PathBuf>> {
+    let mut plan: HashMap<String, Vec<PathBuf>> = HashMap::new();
+
+    for image in images {
+        let ratio = match get_image_ratio(image) {
+            Some(r) => r,
+            None => continue,
+        };
+
+        let category = storage.categorize(ratio).unwrap_or("other");
+
+        plan.entry(category.to_string())
+            .or_default()
+            .push(image.clone());
+    }
+
+    plan
+}
+
+pub fn get_image_ratio(path: &PathBuf) -> Option<f32> {
+    let (width, height) = image_dimensions(path).ok()?;
+    if height == 0 {
+        return None;
+    }
+    Some(width as f32 / height as f32)
 }

@@ -43,6 +43,13 @@ impl CoefStorage {
         Self { coefs }
     }
 
+    pub fn categorize(&self, ratio: f32) -> Option<&str> {
+        self.coefs
+            .iter()
+            .find(|(_, range)| range.in_range(ratio))
+            .map(|(name, _)| name.as_str())
+    }
+
     pub fn get_coef(&self, coef_name: &str) -> Option<CoefRange> {
         self.coefs.get(coef_name).copied()
     }

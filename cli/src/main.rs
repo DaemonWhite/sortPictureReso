@@ -1,6 +1,6 @@
 // On importe tous les éléments publics (fonctions, structs) du crate core_logic.
 // La syntaxe 'use crate_name::item' est standard pour l'importation.
-use core_picture_sorter::search_image;
+use core_picture_sorter::{search_image, sort_image, coefstorage};
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
@@ -39,12 +39,25 @@ fn main() {
 
     let images_path: PathBuf = PathBuf::from(cli.input);
 
-    let result = search_image(images_path, cli.recursif);
-
     println!("=============================================");
     println!("🚀 Recherche d'image en cours...");
     println!("=============================================");
 
-    println!("{:?}", result);
+    let list_images = search_image(images_path, cli.recursif);
+
+    println!("Image trouver : {}", list_images.len());
+
+    println!("=============================================");
+    println!("🚀 Trie d'image en cours...");
+    println!("=============================================");
+
+    let result = sort_image(&list_images, coefstorage::CoefStorage::new());
+
+    println!("Catégorie trouvé {}", result.len());
+
+    for (categorie, list) in result {
+        println!("--- {} ---", categorie);
+        println!("Image trouver {}", list.len());
+    }
 }
 
