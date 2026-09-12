@@ -1,10 +1,18 @@
 pub mod coefstorage;
 
-use std::io::Read;
+use std::io::{self, Read};
 use std::fs::{self, File};
 use std::path::PathBuf;
 use image::{guess_format, image_dimensions};
 use std::collections::HashMap;
+
+
+// Erreur si jamais
+#[derive(Debug, Clone)]
+pub struct SortAction {
+    pub source: PathBuf,
+    pub ratio: f32,
+}
 
 pub fn search_image(path: PathBuf, recursif: bool) -> Vec<PathBuf> {
     let mut picture_paths = Vec::new();
@@ -45,8 +53,8 @@ fn is_image(path: &PathBuf) -> bool {
     guess_format(&buffer).is_ok()
 }
 
-pub fn sort_image(images: &[PathBuf], storage: coefstorage::CoefStorage) -> HashMap<String, Vec<PathBuf>> {
-    let mut plan: HashMap<String, Vec<PathBuf>> = HashMap::new();
+pub fn plan_sort(images: &[PathBuf], storage: coefstorage::CoefStorage) -> HashMap<String, Vec<SortAction>> {
+    let mut plan: HashMap<String, Vec<SortAction>> = HashMap::new();
 
     for image in images {
         let ratio = match get_image_ratio(image) {
@@ -58,10 +66,56 @@ pub fn sort_image(images: &[PathBuf], storage: coefstorage::CoefStorage) -> Hash
 
         plan.entry(category.to_string())
             .or_default()
-            .push(image.clone());
+            .push(SortAction {
+                source: image.clone(),
+                ratio: ratio
+            });
     }
 
     plan
+}
+
+
+// TODO Ajouter un système qui crée automatiquement les dossier parents
+pub fn execute_plan<F>(
+    plan: &HashMap<String, Vec<SortAction>>,
+    move_mode: bool,
+    output_path: PathBuf,
+    mut on_progress: F,
+) -> Result<(), io::Error>
+where
+    F: FnMut(&SortAction, usize, usize)
+{
+    let mut index = 0;
+    let mut total = 0;
+    for (_, actions) in plan {
+        total += actions.len();
+    }
+
+    for (categorie, actions) in plan {
+        let output_categorie_path = output_path.join(categorie);
+        for action in actions {
+
+                let destination = output_categorie_path.join(&action.source.file_name().unwrap());
+
+                if let Some(parent) = destination.parent() {
+                    fs::create_dir_all(parent)?;
+                }
+
+                println!("{:?}",destination);
+                if move_mode {
+                    fs::rename(&action.source, destination )?;
+                } else {
+                    fs::copy(&action.source, destination)?;
+                }
+
+                index += 1;
+                on_progress(&action, index, total);
+        }
+
+    }
+
+    Ok(())
 }
 
 pub fn get_image_ratio(path: &PathBuf) -> Option<f32> {

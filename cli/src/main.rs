@@ -1,6 +1,6 @@
 // On importe tous les éléments publics (fonctions, structs) du crate core_logic.
 // La syntaxe 'use crate_name::item' est standard pour l'importation.
-use core_picture_sorter::{search_image, sort_image, coefstorage};
+use core_picture_sorter::{search_image, plan_sort, coefstorage, execute_plan};
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
@@ -11,6 +11,9 @@ pub struct Cli {
     /// Dossier contenant les images à trier
     #[arg(short, long, value_name = "DOSSIER")]
     pub input: PathBuf,
+
+    #[arg(short, long, value_name = "DOSSIER")]
+    pub output: PathBuf,
 
     /// Exécution à blanc sans déplacer de fichiers
     #[arg(short, long, default_value_t = false)]
@@ -38,6 +41,7 @@ fn main() {
     let cli = Cli::parse();
 
     let images_path: PathBuf = PathBuf::from(cli.input);
+    let output_path: PathBuf = PathBuf::from(cli.output);
 
     println!("=============================================");
     println!("🚀 Recherche d'image en cours...");
@@ -51,13 +55,20 @@ fn main() {
     println!("🚀 Trie d'image en cours...");
     println!("=============================================");
 
-    let result = sort_image(&list_images, coefstorage::CoefStorage::new());
+    let result = plan_sort(&list_images, coefstorage::CoefStorage::new());
+
 
     println!("Catégorie trouvé {}", result.len());
 
-    for (categorie, list) in result {
+    for (categorie, list) in &result {
         println!("--- {} ---", categorie);
         println!("Image trouver {}", list.len());
     }
+
+    // TODO Verbose mode ou juste dernier
+    let _ = execute_plan(&result, false,  output_path, |action, index, total| {
+        println!("[{}/{}] Traitement de {:?}", index, total, action);
+    });
+
 }
 
