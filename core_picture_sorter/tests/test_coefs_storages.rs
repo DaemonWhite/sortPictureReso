@@ -20,7 +20,7 @@ mod tests {
     fn test_coef_storage_new() {
         let storage = CoefStorage::default();
 
-        let pc_standar = storage.get_coef("pc-standar");
+        let pc_standar = storage.get_coef("pc-standard");
         assert!(pc_standar.is_some());
         assert_coef_range_eq(pc_standar.unwrap(), CoefRange::new(1.5, 1.9), 0.0001);
 
@@ -40,7 +40,7 @@ mod tests {
     #[test]
     fn test_coef_storage_get_coef_success() {
         let storage = CoefStorage::default();
-        let result = storage.get_coef("pc-standar");
+        let result = storage.get_coef("pc-standard");
         assert!(result.is_some());
     }
 
