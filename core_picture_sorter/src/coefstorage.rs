@@ -46,6 +46,12 @@ impl Default for CoefStorage {
 
 impl CoefStorage {
 
+    pub fn empty() -> Self {
+        Self {
+            coefs: HashMap::new(),
+        }
+    }
+
     pub fn load_or_create() -> Result<Self, Box<dyn std::error::Error>> {
         let path = Self::get_config_path()?;
 
@@ -91,6 +97,45 @@ impl CoefStorage {
 
     pub fn add_coef(&mut self, coef_name: &str, coef_range: CoefRange) {
         self.coefs.insert(coef_name.to_string(), coef_range);
+    }
+
+    pub fn verify(&self) -> Result<(), Vec<String>> {
+        let mut errors = Vec::new();
+
+        // 1. Vérification de la cohérence interne (min < max)
+        for (name, range) in &self.coefs {
+            if range.min >= range.max {
+                errors.push(format!(
+                    "L'intervalle '{}' est invalide : min ({}) doit être strictement inférieur à max ({}).",
+                    name, range.min, range.max
+                ));
+            }
+        }
+
+        // 2. Vérification des chevauchements entre intervalles
+        let entries: Vec<(&String, &CoefRange)> = self.coefs.iter().collect();
+
+        for i in 0..entries.len() {
+            for j in (i + 1)..entries.len() {
+                let (name_a, range_a) = entries[i];
+                let (name_b, range_b) = entries[j];
+
+                // Deux intervalles demi-ouverts [a.min, a.max) et [b.min, b.max) se chevauchent
+                // si et seulement si : a.min < b.max ET b.min < a.max
+                if range_a.min < range_b.max && range_b.min < range_a.max {
+                    errors.push(format!(
+                        "Chevauchement détecté entre '{}' [{:.2}, {:.2}) et '{}' [{:.2}, {:.2}).",
+                        name_a, range_a.min, range_a.max, name_b, range_b.min, range_b.max
+                    ));
+                }
+            }
+        }
+
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(errors)
+        }
     }
 
 }

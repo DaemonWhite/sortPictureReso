@@ -48,6 +48,18 @@ fn main() {
         coefstorage::CoefStorage::default()
     });
 
+    match coef_storage.verify() {
+        Ok(()) => {
+            println!("Configuration des coefficients valide.");
+        }
+        Err(errors) => {
+            eprintln!("Erreur(s) dans la configuration des coefficients :");
+            for err in errors {
+                eprintln!("  - {err}");
+            }
+        }
+    }
+
     println!("=============================================");
     println!("🚀 Recherche d'image en cours...");
     println!("=============================================");
@@ -76,4 +88,5 @@ fn main() {
     });
 
 }
+
 

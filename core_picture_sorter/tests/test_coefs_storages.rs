@@ -18,7 +18,7 @@ mod tests {
 
     #[test]
     fn test_coef_storage_new() {
-        let storage = CoefStorage::new();
+        let storage = CoefStorage::default();
 
         let pc_standar = storage.get_coef("pc-standar");
         assert!(pc_standar.is_some());
@@ -39,21 +39,21 @@ mod tests {
 
     #[test]
     fn test_coef_storage_get_coef_success() {
-        let storage = CoefStorage::new();
+        let storage = CoefStorage::default();
         let result = storage.get_coef("pc-standar");
         assert!(result.is_some());
     }
 
     #[test]
     fn test_coef_storage_get_coef_failure() {
-        let storage = CoefStorage::new();
+        let storage = CoefStorage::default();
         let result = storage.get_coef("unknown_key");
         assert!(result.is_none());
     }
 
     #[test]
     fn test_coef_storage_add_new_coef() {
-        let mut storage = CoefStorage::new();
+        let mut storage = CoefStorage::default();
 
         let new_coef = CoefRange::new(2.0, 3.0);
 
@@ -66,7 +66,7 @@ mod tests {
 
     #[test]
     fn test_coef_storage_add_overwrite_coef() {
-        let mut storage = CoefStorage::new();
+        let mut storage = CoefStorage::default();
         let original_coef = storage.get_coef("mobile").unwrap();
 
         let new_coef = CoefRange::new(5.0, 6.0);
@@ -78,5 +78,73 @@ mod tests {
         assert_coef_range_eq(result.unwrap(), CoefRange::new(5.0, 6.0), 0.0001);
 
         assert_ne!(result.unwrap(), original_coef);
+    }
+
+    #[test]
+    fn test_verify_default_is_valid() {
+        let storage = CoefStorage::default();
+        assert!(storage.verify().is_ok());
+    }
+
+    #[test]
+    fn test_verify_contiguous_ranges_are_valid() {
+        let mut storage = CoefStorage::empty();
+        storage.add_coef("low", CoefRange::new(0.0, 1.0));
+        storage.add_coef("high", CoefRange::new(1.0, 2.0));
+
+        assert!(storage.verify().is_ok());
+    }
+
+    #[test]
+    fn test_verify_invalid_min_max() {
+        let mut storage = CoefStorage::empty();
+        storage.add_coef("inverted", CoefRange::new(2.0, 1.0));
+        storage.add_coef("equal", CoefRange::new(1.0, 1.0));
+
+        let result = storage.verify();
+        assert!(result.is_err());
+
+        let errors = result.unwrap_err();
+        assert_eq!(errors.len(), 2);
+        assert!(errors[0].contains("min") && errors[0].contains("max"));
+    }
+
+    #[test]
+    fn test_verify_overlapping_ranges() {
+        let mut storage = CoefStorage::empty();
+        storage.add_coef("a", CoefRange::new(0.0, 1.2));
+        storage.add_coef("b", CoefRange::new(1.0, 2.0));
+
+        let result = storage.verify();
+        assert!(result.is_err());
+
+        let errors = result.unwrap_err();
+        assert_eq!(errors.len(), 1);
+        assert!(errors[0].contains("Chevauchement"));
+    }
+
+    #[test]
+    fn test_verify_inclusion_overlap() {
+        // Test le cas où un intervalle est totalement inclus dans un autre
+        let mut storage = CoefStorage::empty();
+        storage.add_coef("outer", CoefRange::new(0.0, 10.0));
+        storage.add_coef("inner", CoefRange::new(2.0, 5.0));
+
+        let result = storage.verify();
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_verify_multiple_error_types() {
+        let mut storage = CoefStorage::empty();
+        storage.add_coef("invalid", CoefRange::new(5.0, 2.0)); // Invalide
+        storage.add_coef("a", CoefRange::new(0.0, 1.5));        // Chevauche 'b'
+        storage.add_coef("b", CoefRange::new(1.0, 2.0));
+
+        let result = storage.verify();
+        assert!(result.is_err());
+
+        let errors = result.unwrap_err();
+        assert_eq!(errors.len(), 2); // 1 erreur de borne + 1 erreur de chevauchement
     }
 }
