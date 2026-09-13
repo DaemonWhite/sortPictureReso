@@ -43,6 +43,11 @@ fn main() {
     let images_path: PathBuf = PathBuf::from(cli.input);
     let output_path: PathBuf = PathBuf::from(cli.output);
 
+    let coef_storage = coefstorage::CoefStorage::load_or_create().unwrap_or_else(|err| {
+        eprintln!("Attention: Impossible de charger la configuration ({err}). Utilisation des valeurs par défaut.");
+        coefstorage::CoefStorage::default()
+    });
+
     println!("=============================================");
     println!("🚀 Recherche d'image en cours...");
     println!("=============================================");
@@ -55,7 +60,7 @@ fn main() {
     println!("🚀 Trie d'image en cours...");
     println!("=============================================");
 
-    let result = plan_sort(&list_images, coefstorage::CoefStorage::new());
+    let result = plan_sort(&list_images, coef_storage);
 
 
     println!("Catégorie trouvé {}", result.len());
