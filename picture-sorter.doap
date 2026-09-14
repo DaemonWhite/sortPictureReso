@@ -15,7 +15,8 @@ Ratio picture au sort in great folder
   <download-page rdf:resource="https://github.com/DaemonWhite/sortPictureReso" />
   <bug-database rdf:resource="https://github.com/DaemonWhite/sortPictureReso/issues/" />
 
-  <programming-language>Python</programming-language>
+  <programming-language>Rust, Cargo</programming-language>
+  <programming-language>Rust, Cargo</programming-language>
 
   <maintainer>
     <foaf:Person>

@@ -1,0 +1,172 @@
+use std::collections::HashMap;
+use std::{fs, fmt};
+use serde::{Deserialize, Serialize};
+use serde_json;
+use directories::ProjectDirs;
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct CoefStorage {
+    coefs: HashMap<String, CoefRange>
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq)]
+pub struct CoefRange {
+    min : f32,
+    max : f32
+}
+
+impl fmt::Display for CoefRange {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "[{:.2}, {:.2}]", self.min, self.max)
+    }
+}
+
+impl CoefRange  {
+    pub fn new(min: f32, max: f32) -> CoefRange {
+        Self {min, max}
+    }
+
+    pub fn in_range(self, value: f32) -> bool {
+        value >= self.min && value < self.max
+    }
+
+    pub fn get_min(&self) -> f32 {
+        self.min
+    }
+
+    pub fn get_max(&self) -> f32 {
+        self.max
+    }
+}
+
+impl Default for CoefStorage {
+    fn default() -> Self {
+        let mut coefs = HashMap::new();
+        coefs.insert("pc-standard".to_string(), CoefRange::new(1.5, 1.9));
+        coefs.insert("pc-old".to_string(), CoefRange::new(0.9, 1.5));
+        coefs.insert("mobile".to_string(), CoefRange::new(0.0, 0.9));
+
+        Self { coefs }
+    }
+}
+
+impl fmt::Display for CoefStorage {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.coefs.is_empty() {
+            return write!(f, "Aucun coefficient enregistré.");
+        }
+
+        writeln!(f, "Configuration des coefficients :")?;
+
+        // Tri par nom pour un affichage stable à chaque exécution
+        let mut entries: Vec<(&String, &CoefRange)> = self.coefs.iter().collect();
+        entries.sort_by_key(|(name, _)| *name);
+
+        for (name, range) in entries {
+            // Alignement dynamique à gauche sur 15 caractères
+            writeln!(f, "  • {:<15} : {}", name, range)?;
+        }
+
+        Ok(())
+    }
+}
+
+impl CoefStorage {
+
+    pub fn empty() -> Self {
+        Self {
+            coefs: HashMap::new(),
+        }
+    }
+
+    pub fn load_or_create() -> Result<Self, Box<dyn std::error::Error>> {
+        let path = Self::get_config_path()?;
+
+        if !path.exists() {
+            let default_storage = Self::default();
+            default_storage.save()?;
+            return Ok(default_storage);
+        }
+
+        let content = fs::read_to_string(path)?;
+        let storage: Self = serde_json::from_str(&content)?;
+        Ok(storage)
+    }
+
+    pub fn save(&self) -> Result<(), Box<dyn std::error::Error>> {
+        let path = Self::get_config_path()?;
+
+        if let Some(parent) = path.parent() {
+            fs::create_dir_all(parent)?;
+        }
+
+        let json = serde_json::to_string_pretty(self)?;
+        fs::write(path, json)?;
+        Ok(())
+    }
+
+    fn get_config_path() -> Result<std::path::PathBuf, &'static str> {
+        let proj_dirs = ProjectDirs::from("", "", "pictureSorter")
+            .ok_or("Impossible de récupérer le dossier de configuration")?;
+        Ok(proj_dirs.config_dir().join("coefficients.json"))
+    }
+
+    pub fn categorize(&self, ratio: f32) -> Option<&str> {
+        self.coefs
+            .iter()
+            .find(|(_, range)| range.in_range(ratio))
+            .map(|(name, _)| name.as_str())
+    }
+
+    pub fn get_coef(&self, coef_name: &str) -> Option<CoefRange> {
+        self.coefs.get(coef_name).copied()
+    }
+
+    pub fn add_coef(&mut self, coef_name: &str, coef_range: CoefRange) {
+        self.coefs.insert(coef_name.to_string(), coef_range);
+    }
+
+    pub fn remove_coef(&mut self, coef_name: &str) -> bool {
+        self.coefs.remove_entry(coef_name).is_some()
+    }
+
+    pub fn verify(&self) -> Result<(), Vec<String>> {
+        let mut errors = Vec::new();
+
+        // 1. Vérification de la cohérence interne (min < max)
+        for (name, range) in &self.coefs {
+            if range.min >= range.max {
+                errors.push(format!(
+                    "L'intervalle '{}' est invalide : min ({}) doit être strictement inférieur à max ({}).",
+                    name, range.min, range.max
+                ));
+            }
+        }
+
+        // 2. Vérification des chevauchements entre intervalles
+        let entries: Vec<(&String, &CoefRange)> = self.coefs.iter().collect();
+
+        for i in 0..entries.len() {
+            for j in (i + 1)..entries.len() {
+                let (name_a, range_a) = entries[i];
+                let (name_b, range_b) = entries[j];
+
+                // Deux intervalles demi-ouverts [a.min, a.max) et [b.min, b.max) se chevauchent
+                // si et seulement si : a.min < b.max ET b.min < a.max
+                if range_a.min < range_b.max && range_b.min < range_a.max {
+                    errors.push(format!(
+                        "Chevauchement détecté entre '{}' [{:.2}, {:.2}) et '{}' [{:.2}, {:.2}).",
+                        name_a, range_a.min, range_a.max, name_b, range_b.min, range_b.max
+                    ));
+                }
+            }
+        }
+
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(errors)
+        }
+    }
+
+}

@@ -1,0 +1,14 @@
+[package]
+name = "core_picture_sorter"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "core_picture_sorter"
+path = "src/lib.rs"
+
+[dependencies]
+directories = "6.0.0"
+image = "0.25.10"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
