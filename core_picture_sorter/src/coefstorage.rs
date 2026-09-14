@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::fs;
+use std::{fs, fmt};
 use serde::{Deserialize, Serialize};
 use serde_json;
 use directories::ProjectDirs;
@@ -13,6 +13,12 @@ pub struct CoefStorage {
 pub struct CoefRange {
     min : f32,
     max : f32
+}
+
+impl fmt::Display for CoefRange {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "[{:.2}, {:.2}]", self.min, self.max)
+    }
 }
 
 impl CoefRange  {
@@ -41,6 +47,27 @@ impl Default for CoefStorage {
         coefs.insert("mobile".to_string(), CoefRange::new(0.0, 0.9));
 
         Self { coefs }
+    }
+}
+
+impl fmt::Display for CoefStorage {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if self.coefs.is_empty() {
+            return write!(f, "Aucun coefficient enregistré.");
+        }
+
+        writeln!(f, "Configuration des coefficients :")?;
+
+        // Tri par nom pour un affichage stable à chaque exécution
+        let mut entries: Vec<(&String, &CoefRange)> = self.coefs.iter().collect();
+        entries.sort_by_key(|(name, _)| *name);
+
+        for (name, range) in entries {
+            // Alignement dynamique à gauche sur 15 caractères
+            writeln!(f, "  • {:<15} : {}", name, range)?;
+        }
+
+        Ok(())
     }
 }
 
@@ -97,6 +124,10 @@ impl CoefStorage {
 
     pub fn add_coef(&mut self, coef_name: &str, coef_range: CoefRange) {
         self.coefs.insert(coef_name.to_string(), coef_range);
+    }
+
+    pub fn remove_coef(&mut self, coef_name: &str) -> bool {
+        self.coefs.remove_entry(coef_name).is_some()
     }
 
     pub fn verify(&self) -> Result<(), Vec<String>> {

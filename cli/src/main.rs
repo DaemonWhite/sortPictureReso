@@ -10,10 +10,16 @@ use clap::{Parser, Subcommand};
 pub struct Cli {
     /// Dossier contenant les images à trier
     #[arg(short, long, value_name = "DOSSIER")]
-    pub input: PathBuf,
+    pub input: Option<PathBuf>,
 
     #[arg(short, long, value_name = "DOSSIER")]
-    pub output: PathBuf,
+    pub output: Option<PathBuf>,
+
+    #[command(subcommand)]
+    pub add_coef: Option<Commands>,
+
+    #[arg(short, long, default_value_t = false)]
+    pub show_conf: bool,
 
     /// Exécution à blanc sans déplacer de fichiers
     #[arg(short, long, default_value_t = false)]
@@ -21,32 +27,79 @@ pub struct Cli {
 
     #[arg(short, long, default_value_t = false)]
     pub recursif: bool,
-
-    #[command(subcommand)]
-    pub command: Option<Commands>,
 }
 
 #[derive(Subcommand)]
 pub enum Commands {
-    /// Trier par date EXIF
-    ByDate {
-        #[arg(short, long, default_value = "%Y/%m")]
-        format: String,
+    AddCoef {
+        #[arg(long)]
+        name: String,
+
+        #[arg(long)]
+        min: f32,
+        #[arg(long)]
+        max: f32,
     },
-    /// Trier par résolution ou ratio
-    ByResolution,
+
+    RemoveCoef {
+        #[arg(long)]
+        name: String
+    }
 }
 
 fn main() {
     let cli = Cli::parse();
 
-    let images_path: PathBuf = PathBuf::from(cli.input);
-    let output_path: PathBuf = PathBuf::from(cli.output);
 
-    let coef_storage = coefstorage::CoefStorage::load_or_create().unwrap_or_else(|err| {
+
+    let mut coef_storage = coefstorage::CoefStorage::load_or_create().unwrap_or_else(|err| {
         eprintln!("Attention: Impossible de charger la configuration ({err}). Utilisation des valeurs par défaut.");
         coefstorage::CoefStorage::default()
     });
+
+    if cli.show_conf {
+
+        println!("{}", coef_storage);
+        return;
+    }
+
+
+    if let Some(command) = cli.add_coef {
+        match command {
+            Commands::AddCoef { name, min, max } => {
+                let range = coefstorage::CoefRange::new(min, max);
+                coef_storage.add_coef(&name, range);
+
+                if let Err(errors) = coef_storage.verify() {
+                    eprintln!("❌ Configuration invalide après l'ajout :");
+                    for err in errors {
+                        eprintln!("  - {err}");
+                    }
+                    std::process::exit(1);
+                }
+
+                if let Err(err) = coef_storage.save() {
+                    eprintln!("❌ Erreur lors de la sauvegarde : {err}");
+                    std::process::exit(1);
+                }
+
+                println!("✅ Coefficient '{name}' [{min}, {max}] ajouté et sauvegardé avec succès.");
+            }
+            Commands::RemoveCoef { name } => {
+                if coef_storage.remove_coef(&name) {
+                    if let Err(err) = coef_storage.save() {
+                        eprintln!("❌ Erreur lors de la sauvegarde : {err}");
+                        std::process::exit(1);
+                    }
+                    println!("✅ Coefficient '{name}' supprimé avec succès.");
+                } else {
+                    eprintln!("⚠️ Le coefficient '{name}' n'existe pas.");
+                }
+            }
+        }
+        // Fin d'exécution si une sous-commande a été exécutée
+        return;
+    }
 
     match coef_storage.verify() {
         Ok(()) => {
@@ -59,6 +112,16 @@ fn main() {
             }
         }
     }
+
+    let images_path = cli.input.unwrap_or_else(|| {
+        eprintln!("❌ L'option -i/--input est requise pour effectuer le tri.");
+        std::process::exit(1);
+    });
+
+    let output_path = cli.output.unwrap_or_else(|| {
+        eprintln!("❌ L'option -o/--output est requise pour effectuer le tri.");
+        std::process::exit(1);
+    });
 
     println!("=============================================");
     println!("🚀 Recherche d'image en cours...");
@@ -88,5 +151,6 @@ fn main() {
     });
 
 }
+
 
 
